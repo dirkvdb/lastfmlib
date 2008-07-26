@@ -4,7 +4,6 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <stdexcept>
-#include <sstream>
 
 using namespace std;
 
@@ -23,9 +22,7 @@ void Condition::wait(Mutex& mutex)
     int ret = pthread_cond_wait(&m_Condition, mutex.getHandle());
     if (0 != ret)
     {
-        stringstream ss;
-        ss << "pthread_cond_wait returned: " << strerror(ret);
-        throw std::logic_error(ss.str());
+        throw std::logic_error(string("pthread_cond_wait returned: ") + strerror(ret));
     }
 }
 
@@ -47,9 +44,7 @@ bool Condition::wait(Mutex& mutex, int timeoutInMs)
     }
     else if (0 != ret)
     {
-        stringstream ss;
-        ss << "pthread_cond_timedwait returned: " << strerror(ret);
-        throw std::logic_error(ss.str());
+        throw std::logic_error(string("pthread_cond_timedwait returned: ") + strerror(ret));
     }
 
     return true;

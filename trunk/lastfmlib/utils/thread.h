@@ -14,11 +14,22 @@ public:
     void start();
     void join();
     void cancel();
+    bool isRunning();
 
 private:
-    pthread_t       m_Thread;
-    ThreadFunction  m_pfnThreadFunction;
-    void*           m_pInstance;
+    struct InstancePointers
+    {
+        Thread* pThreadInstance;
+        void*   pRunInstance;
+    };
+
+    static void* onThreadStart(void* data);
+    static void onThreadExit(void* data);
+
+    pthread_t           m_Thread;
+    pthread_key_t       m_Key;
+    ThreadFunction      m_pfnThreadFunction;
+    InstancePointers    m_InstancePtrs;
 };
 
 #endif
