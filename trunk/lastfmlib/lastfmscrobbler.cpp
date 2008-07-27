@@ -24,7 +24,6 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass)
 , m_NowPlayingThread(LastFmScrobbler::nowPlayingThread, this)
 , m_SubmitTrackThread(LastFmScrobbler::submitTrackThread, this)
 , m_Authenticated(false)
-, m_AuthenticationInProgress(false)
 , m_HardConnectionFailureCount(0)
 , m_Username(user)
 , m_Password(pass)
@@ -109,7 +108,7 @@ bool LastFmScrobbler::trackCanBeCommited()
 void LastFmScrobbler::authenticateIfNecessary()
 {
     if (!m_Authenticated &&
-        !m_AuthenticationInProgress &&
+        !m_AuthenticateThread.isRunning() &&
         canReconnect())
     {
         cout << "start authenticatethread" << endl;
@@ -129,7 +128,6 @@ bool LastFmScrobbler::canReconnect()
 void* LastFmScrobbler::authenticateThread(void* pInstance)
 {
     LastFmScrobbler* pScrobbler = reinterpret_cast<LastFmScrobbler*>(pInstance);
-    pScrobbler->m_AuthenticationInProgress = true;
 
     try
     {
@@ -150,7 +148,6 @@ void* LastFmScrobbler::authenticateThread(void* pInstance)
         cerr << e.what() << endl;
     }
 
-    pScrobbler->m_AuthenticationInProgress = false;
     return NULL;
 }
 

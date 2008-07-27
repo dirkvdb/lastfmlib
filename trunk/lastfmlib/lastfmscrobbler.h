@@ -48,7 +48,6 @@ private:
     SubmissionInfoCollection m_BufferedTrackInfos;
 
     bool            m_Authenticated;
-    bool            m_AuthenticationInProgress;
     int             m_HardConnectionFailureCount;
     Condition       m_AuthenticatedCondition;
     Mutex           m_AuthenticatedMutex;
