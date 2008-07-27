@@ -51,6 +51,7 @@ private:
     int             m_HardConnectionFailureCount;
     Condition       m_AuthenticatedCondition;
     Mutex           m_AuthenticatedMutex;
+    Mutex           m_TrackInfosMutex;
 
     std::string     m_Username;
     std::string     m_Password;
