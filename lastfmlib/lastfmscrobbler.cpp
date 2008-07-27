@@ -74,7 +74,10 @@ void LastFmScrobbler::finishedPlaying()
 
     if (trackCanBeCommited())
     {
-        m_BufferedTrackInfos.addInfo(m_CurrentTrackInfo);
+        {
+            ScopedLock lock(m_TrackInfosMutex);
+            m_BufferedTrackInfos.addInfo(m_CurrentTrackInfo);
+        }
 
         if (m_Authenticated)
         {
@@ -189,8 +192,14 @@ void* LastFmScrobbler::submitTrackThread(void* pInstance)
 
     try
     {
-        pScrobbler->m_pLastFmClient->submit(pScrobbler->m_BufferedTrackInfos);
-        pScrobbler->m_BufferedTrackInfos.clear();
+        SubmissionInfoCollection tracksToSubmit;
+        {
+            ScopedLock lock(pScrobbler->m_TrackInfosMutex);
+            tracksToSubmit = pScrobbler->m_BufferedTrackInfos;
+            pScrobbler->m_BufferedTrackInfos.clear();
+        }
+
+        pScrobbler->m_pLastFmClient->submit(tracksToSubmit);
     }
     catch (ConnectionError& e)
     {
