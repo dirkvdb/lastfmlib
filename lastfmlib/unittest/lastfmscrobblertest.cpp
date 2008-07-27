@@ -42,7 +42,6 @@ SUITE(LastFmScrobblerTest)
 {
     TEST(TestLastFmScrobbler)
     {
-        return;
         LastFmScrobblerTester scrobbler("liblastfmtest", "testlib");
 
         SubmissionInfo info("Artist", "Track");
