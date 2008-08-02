@@ -137,8 +137,6 @@ string LastFmClient::createRequestString(const string& user, const string& pass)
             << "&t=" << timestamp
             << "&a=" << generateAutenticationToken(pass, timestamp);
 
-    cout << request.str() << endl;
-
     return request.str();
 }
 

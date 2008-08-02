@@ -2,6 +2,9 @@
 
 #include "mutex.h"
 
+namespace utils
+{
+
 ScopedLock::ScopedLock(Mutex& mutex)
 : m_Mutex(mutex)
 {
@@ -11,4 +14,6 @@ ScopedLock::ScopedLock(Mutex& mutex)
 ScopedLock::~ScopedLock()
 {
     m_Mutex.unlock();
+}
+
 }

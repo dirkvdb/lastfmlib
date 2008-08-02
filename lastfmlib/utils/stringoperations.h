@@ -27,7 +27,6 @@
 #include <stdexcept>
 #include <iostream>
 
-
 namespace StringOperations
 {
     void lowercase(std::string& aString);
@@ -37,7 +36,7 @@ namespace StringOperations
     std::vector<std::string> tokenize(const std::string& str, const std::string& delimiter);
     void wideCharToUtf8(const std::wstring& wideString, std::string& utf8String);
     void utf8ToWideChar(const std::string& utf8String, std::wstring& wideString);
-    
+
     template<typename T>
     inline void toNumeric(const std::string& aString, T& numeric)
     {

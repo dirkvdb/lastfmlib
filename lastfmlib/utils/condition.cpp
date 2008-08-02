@@ -7,6 +7,9 @@
 
 using namespace std;
 
+namespace utils
+{
+
 Condition::Condition()
 {
     pthread_cond_init(&m_Condition, NULL);
@@ -58,4 +61,6 @@ void Condition::signal()
 void Condition::broadcast()
 {
     pthread_cond_broadcast(&m_Condition);
+}
+
 }
