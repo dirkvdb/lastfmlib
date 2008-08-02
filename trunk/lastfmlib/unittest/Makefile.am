@@ -1,4 +1,7 @@
+if ENABLE_UNITTEST
 check_PROGRAMS = testrunner
+endif
+
 
 testrunner_SOURCES =    testrunner.cpp\
                         lastfmclienttest.cpp\
@@ -10,7 +13,8 @@ testrunner_SOURCES =    testrunner.cpp\
                         lastfmclientmock.h lastfmclientmock.cpp
 
 testrunner_LDFLAGS  =   $(top_builddir)/lastfmlib/liblastfm.la
-testrunner_LDADD    =   -lunittest++ $(CURL_LIBS)
+testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) $(LOG4CPP_LIBS)
 INCLUDES            =   -I$(top_srcdir)
 
 AM_CXXFLAGS = -Wall -Wfatal-errors
+

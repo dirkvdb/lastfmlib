@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+namespace utils
+{
 typedef void* (*ThreadFunction)(void* pInstance);
 
 class Thread
@@ -31,5 +33,6 @@ private:
     ThreadFunction      m_pfnThreadFunction;
     InstancePointers    m_InstancePtrs;
 };
+}
 
 #endif

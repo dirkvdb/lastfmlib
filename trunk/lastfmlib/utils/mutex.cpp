@@ -1,5 +1,8 @@
 #include "mutex.h"
 
+namespace utils
+{
+
 Mutex::Mutex()
 {
     pthread_mutex_init(&m_Mutex, NULL);
@@ -23,4 +26,6 @@ void Mutex::unlock()
 pthread_mutex_t* Mutex::getHandle()
 {
     return &m_Mutex;
+}
+
 }

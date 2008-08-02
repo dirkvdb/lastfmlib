@@ -3,6 +3,9 @@
 
 #include <pthread.h>
 
+namespace utils
+{
+
 class Mutex;
 
 class Condition
@@ -19,5 +22,7 @@ public:
 private:
     pthread_cond_t m_Condition;
 };
+
+}
 
 #endif

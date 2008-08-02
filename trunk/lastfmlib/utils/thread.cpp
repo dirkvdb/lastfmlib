@@ -4,6 +4,10 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace utils
+{
+
 using namespace std;
 
 
@@ -72,6 +76,8 @@ void* Thread::onThreadStart(void* data)
 void Thread::onThreadExit(void* data)
 {
     Thread* pThread = reinterpret_cast<Thread*>(data);
-    pthread_detach(pThread->m_Thread);
+    //pthread_detach(pThread->m_Thread);
     pThread->m_Thread = 0;
+}
+
 }

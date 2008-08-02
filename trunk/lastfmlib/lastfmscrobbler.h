@@ -10,6 +10,7 @@
 #include "utils/condition.h"
 #include "utils/mutex.h"
 #include "utils/thread.h"
+#include "utils/log.h"
 
 
 class LastFmScrobbler
@@ -23,38 +24,41 @@ public:
     void finishedPlaying();
 
 protected:
+    LastFmScrobbler();
     LastFmClient*   m_pLastFmClient;
     time_t          m_LastConnectionAttempt;
     time_t          m_TrackPlayTime;
     time_t          m_TrackResumeTime;
+    utils::Thread   m_AuthenticateThread;
+    utils::Thread   m_SendInfoThread;
 
 private:
     void authenticateIfNecessary();
-    bool trackCanBeCommited();
+    bool trackCanBeCommited(const SubmissionInfo& info);
     bool canReconnect();
+    void submitTrack(const SubmissionInfo& info);
+    void setNowPlaying();
 
-    void startThread(pthread_t* pThread, ThreadFunction pfnThreadFunction);
+    void startThread(pthread_t* pThread, utils::ThreadFunction pfnThreadFunction);
     void joinThreads();
 
     static void* authenticateThread(void* pInstance);
-    static void* nowPlayingThread(void* pInstance);
-    static void* submitTrackThread(void* pInstance);
+    static void* sendInfoThread(void* pInstance);
 
-    Thread          m_AuthenticateThread;
-    Thread          m_NowPlayingThread;
-    Thread          m_SubmitTrackThread;
+    SubmissionInfo              m_PreviousTrackInfo;
+    SubmissionInfo              m_CurrentTrackInfo;
+    SubmissionInfoCollection    m_BufferedTrackInfos;
 
-    SubmissionInfo  m_CurrentTrackInfo;
-    SubmissionInfoCollection m_BufferedTrackInfos;
+    bool                        m_Authenticated;
+    int                         m_HardConnectionFailureCount;
+    utils::Condition            m_AuthenticatedCondition;
+    utils::Mutex                m_AuthenticatedMutex;
+    utils::Mutex                m_TrackInfosMutex;
 
-    bool            m_Authenticated;
-    int             m_HardConnectionFailureCount;
-    Condition       m_AuthenticatedCondition;
-    Mutex           m_AuthenticatedMutex;
-    Mutex           m_TrackInfosMutex;
+    std::string                 m_Username;
+    std::string                 m_Password;
 
-    std::string     m_Username;
-    std::string     m_Password;
+    utils::Log                  m_Log;
 };
 
 #endif

@@ -3,6 +3,9 @@
 
 #include <pthread.h>
 
+namespace utils
+{
+
 class Mutex
 {
 public:
@@ -13,9 +16,11 @@ public:
     void unlock();
 
     pthread_mutex_t* getHandle();
-    
+
 private:
     pthread_mutex_t m_Mutex;
 };
+
+}
 
 #endif
