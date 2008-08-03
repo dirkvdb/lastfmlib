@@ -46,6 +46,19 @@ SUITE(LastFmScrobblerTest)
         SubmissionInfo info("Artist", "Track");
 
         scrobbler.startedPlaying(info);
+        CHECK(scrobbler.pMock->m_NowPlayingCalled);
+        CHECK(!scrobbler.pMock->m_SubmitCalled);
+        CHECK(!scrobbler.pMock->m_SubmitCollectionCalled);
+        CHECK_EQUAL("Artist", scrobbler.pMock->m_LastRecPlayingInfo.getArtist());
+    }
+
+    TEST(TestLastFmScrobblerThreaded)
+    {
+        LastFmScrobblerTester scrobbler(false);
+
+        SubmissionInfo info("Artist", "Track");
+
+        scrobbler.startedPlaying(info);
         usleep(100000);
         CHECK(scrobbler.pMock->m_NowPlayingCalled);
         CHECK(!scrobbler.pMock->m_SubmitCalled);
