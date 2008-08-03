@@ -38,13 +38,13 @@ AC_ARG_ENABLE(unittests,
    [  --enable-unittests Enables build of unittests ],
    ENABLE_UNITTEST=$enableval)
 
-if test "$ENABLE_TEST" = "yes"; then
+if test "$ENABLE_UNITTEST" = "yes"; then
     PKG_CHECK_MODULES(UNITTEST, unittest++, HAVE_UNITTEST=yes, AC_MSG_ERROR([ +Could not find unittest++]))
     AC_SUBST(UNITTEST_LIBS)
     AC_SUBST(UNITTEST_CFLAGS)
     AC_DEFINE(ENABLE_UNITTEST)
 fi
-AM_CONDITIONAL(ENABLE_UNITTEST, test "$enable_unittest" = "yes")
+AM_CONDITIONAL(ENABLE_UNITTEST, test "$enable_unittests" = "yes")
 
 AC_SUBST([pkgconfigdir])
 AC_MSG_NOTICE([pkgconfig directory is ${pkgconfigdir}])

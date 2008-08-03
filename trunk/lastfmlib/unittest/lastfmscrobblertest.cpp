@@ -12,8 +12,8 @@ using namespace std;
 class LastFmScrobblerTester : public LastFmScrobbler
 {
 public:
-    LastFmScrobblerTester()
-    : LastFmScrobbler()
+    LastFmScrobblerTester(bool synchronous)
+    : LastFmScrobbler(synchronous)
     {
         pMock = new LastFmClientMock();
         m_pLastFmClient = pMock;
@@ -34,11 +34,6 @@ public:
         m_TrackResumeTime = time;
     }
 
-    void waitTillFinished()
-    {
-        m_SendInfoThread.join();
-    }
-
     LastFmClientMock* pMock;
 };
 
@@ -46,7 +41,7 @@ SUITE(LastFmScrobblerTest)
 {
     TEST(TestLastFmScrobbler)
     {
-        LastFmScrobblerTester scrobbler;
+        LastFmScrobblerTester scrobbler(true);
 
         SubmissionInfo info("Artist", "Track");
 
@@ -60,7 +55,7 @@ SUITE(LastFmScrobblerTest)
 
     TEST(TestLastFmScrobblerConnectionFailed)
     {
-        LastFmScrobblerTester scrobbler;
+        LastFmScrobblerTester scrobbler(true);
         scrobbler.pMock->m_HandShakeThrowConnectionError = true;
 
         SubmissionInfo info1("Artist1", "Track1");
@@ -71,13 +66,11 @@ SUITE(LastFmScrobblerTest)
 
         SubmissionInfo info3("Artist3", "Track3");
         scrobbler.startedPlaying(info1);
-        scrobbler.waitTillFinished();
         CHECK(!scrobbler.pMock->m_NowPlayingCalled);
 
         //make sure track has played long enough
         scrobbler.setTrackPlayTime(100);
         scrobbler.startedPlaying(info2);
-        scrobbler.waitTillFinished();
         CHECK(!scrobbler.pMock->m_NowPlayingCalled);
         CHECK(!scrobbler.pMock->m_SubmitCalled);
         CHECK(!scrobbler.pMock->m_SubmitCollectionCalled);
@@ -86,7 +79,6 @@ SUITE(LastFmScrobblerTest)
         scrobbler.pMock->m_HandShakeThrowConnectionError = false;
         scrobbler.setLastConnectionAttempt(0);
         scrobbler.startedPlaying(info3);
-        scrobbler.waitTillFinished();
         CHECK(scrobbler.pMock->m_NowPlayingCalled);
         CHECK(!scrobbler.pMock->m_SubmitCalled);
         CHECK(scrobbler.pMock->m_SubmitCollectionCalled);
