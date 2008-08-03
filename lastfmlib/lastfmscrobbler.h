@@ -16,24 +16,46 @@
 class LastFmScrobbler
 {
 public:
-    LastFmScrobbler(const std::string& user, const std::string& pass);
+    /** Constructor
+     * \param user Last.fm user name
+     * \param pass Last.fm password for user
+     * \param synchronous if false all public methods will be executed in
+     * a thread and return immediately (prevents long blocking methods in
+     * case of network problems)
+     */
+    LastFmScrobbler(const std::string& user, const std::string& pass, bool synchronous);
+    /** Destructor */
     virtual ~LastFmScrobbler();
 
+    /** Indicate that a new track has started playing, the previous track
+     * will be submitted (if available) and the new track will be set as
+     * Now Playing
+     * \param info SubmissionInfo object containing information about
+     * the new song
+     */
     void startedPlaying(const SubmissionInfo& info);
-    void pausePlaying(bool paused);
+    /** Indicate that the current track has stopped playing. The current
+     * track will be submitted to Last.fm
+     */
     void finishedPlaying();
+    /** Indicate that playback of the current track has been (un)paused
+     * \param paused true if track is being paused, false if being unpaused
+     */
+    void pausePlaying(bool paused);
 
 protected:
-    LastFmScrobbler();
+    LastFmScrobbler(bool synchronous);
     LastFmClient*   m_pLastFmClient;
+    /** \brief Last time a connection attempt was made */
     time_t          m_LastConnectionAttempt;
+    /** \brief The time that the current track has been played, is set on pause */
     time_t          m_TrackPlayTime;
+    /** \brief The time that the current track was resumed after a pause */
     time_t          m_TrackResumeTime;
-    utils::Thread   m_AuthenticateThread;
-    utils::Thread   m_SendInfoThread;
 
 private:
     void authenticateIfNecessary();
+    void authenticate();
     bool trackCanBeCommited(const SubmissionInfo& info);
     bool canReconnect();
     void submitTrack(const SubmissionInfo& info);
@@ -44,6 +66,9 @@ private:
 
     static void* authenticateThread(void* pInstance);
     static void* sendInfoThread(void* pInstance);
+
+    utils::Thread               m_AuthenticateThread;
+    utils::Thread               m_SendInfoThread;
 
     SubmissionInfo              m_PreviousTrackInfo;
     SubmissionInfo              m_CurrentTrackInfo;
@@ -59,6 +84,8 @@ private:
     std::string                 m_Password;
 
     utils::Log                  m_Log;
+
+    bool                        m_Synchronous;
 };
 
 #endif

@@ -7,42 +7,42 @@
 
 using namespace std;
 
-std::string sourceToString(TrackSource source, const std::string& recommendationKey)
+std::string sourceToString(SubmissionInfo::TrackSource source, const std::string& recommendationKey)
 {
     switch (source)
     {
-        case UserChosen:
+        case SubmissionInfo::UserChosen:
             return "P";
             break;
-        case NonPersonalizedBroadCast:
+        case SubmissionInfo::NonPersonalizedBroadCast:
             return "R";
             break;
-        case PersonalizedRecommendation:
+        case SubmissionInfo::PersonalizedRecommendation:
             return "E";
             break;
-        case Lastfm:
+        case SubmissionInfo::Lastfm:
             return "L" + recommendationKey;
             break;
-        case Unknown:
+        case SubmissionInfo::Unknown:
         default:
             return "U";
     }
 }
 
-std::string ratingToString(TrackRating rating)
+std::string ratingToString(SubmissionInfo::TrackRating rating)
 {
     switch (rating)
     {
-        case Love:
+        case SubmissionInfo::Love:
             return "L";
             break;
-        case Ban:
+        case SubmissionInfo::Ban:
             return "B";
             break;
-        case Skip:
+        case SubmissionInfo::Skip:
             return "S";
             break;
-        case None:
+        case SubmissionInfo::None:
         default:
             return "";
     }
@@ -78,7 +78,7 @@ string SubmissionInfo::getPostData(int index) const
     {
         throw logic_error("Tracklength is required when submitting user chosen track");
     }
-    
+
     stringstream ss;
     ss  << "&a[" << index << "]=" << StringOperations::urlEncode(m_Artist)
         << "&t[" << index << "]=" << StringOperations::urlEncode(m_Track)

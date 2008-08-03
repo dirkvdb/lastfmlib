@@ -88,3 +88,13 @@ int NowPlayingInfo::getTrackLength() const
 {
     return m_TrackLengthInSecs;
 }
+
+int NowPlayingInfo::getTrackNr() const
+{
+    return m_TrackNr;
+}
+
+const std::string& NowPlayingInfo::getMusicBrainzId()
+{
+    return m_MusicBrainzId;
+}

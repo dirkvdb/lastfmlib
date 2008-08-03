@@ -16,7 +16,7 @@ static const time_t MIN_TRACK_LENGTH_TO_SUBMIT  = 30;
 static const time_t MIN_SECS_BETWEEN_CONNECT    = 60;
 static const time_t MAX_SECS_BETWEEN_CONNECT    = 7200;
 
-LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass)
+LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool synchronous)
 : m_pLastFmClient(new LastFmClient())
 , m_LastConnectionAttempt(0)
 , m_TrackPlayTime(-1)
@@ -28,11 +28,12 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass)
 , m_Username(user)
 , m_Password(pass)
 , m_Log("/tmp/lastfmliblog.txt")
+, m_Synchronous(synchronous)
 {
     authenticateIfNecessary();
 }
 
-LastFmScrobbler::LastFmScrobbler()
+LastFmScrobbler::LastFmScrobbler(bool synchronous)
 : m_pLastFmClient(NULL)
 , m_LastConnectionAttempt(0)
 , m_TrackPlayTime(-1)
@@ -42,8 +43,8 @@ LastFmScrobbler::LastFmScrobbler()
 , m_Authenticated(false)
 , m_HardConnectionFailureCount(0)
 , m_Log("/tmp/lastfmliblog.txt")
+, m_Synchronous(synchronous)
 {
-    m_Log.info("__________________________________");
 }
 
 LastFmScrobbler::~LastFmScrobbler()
@@ -60,13 +61,23 @@ void LastFmScrobbler::startedPlaying(const SubmissionInfo& info)
     m_PreviousTrackInfo = m_CurrentTrackInfo;
     m_CurrentTrackInfo = info;
 
+    m_TrackPlayTime = 0;
+    m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
+
     if (m_CurrentTrackInfo.getTimeStarted() < 0)
     {
         m_CurrentTrackInfo.setTimeStarted(time(NULL));
     }
 
-    m_Log.info("Start sendInfo thread");
-    m_SendInfoThread.start();
+    if (m_Synchronous)
+    {
+        submitTrack(m_PreviousTrackInfo);
+        setNowPlaying();
+    }
+    else
+    {
+        m_SendInfoThread.start();
+    }
 }
 
 void LastFmScrobbler::pausePlaying(bool paused)
@@ -85,7 +96,14 @@ void LastFmScrobbler::pausePlaying(bool paused)
 void LastFmScrobbler::finishedPlaying()
 {
     authenticateIfNecessary();
-    submitTrack(m_CurrentTrackInfo);
+    if (m_Synchronous)
+    {
+        submitTrack(m_CurrentTrackInfo);
+    }
+    else
+    {
+        m_Log.error("async finish not implemented yet!!");
+    }
 }
 
 bool LastFmScrobbler::trackCanBeCommited(const SubmissionInfo& info)
@@ -127,8 +145,34 @@ void LastFmScrobbler::authenticateIfNecessary()
         !m_AuthenticateThread.isRunning() &&
         canReconnect())
     {
-        m_Log.info("start authenticatethread");
-        m_AuthenticateThread.start();
+        if (m_Synchronous)
+        {
+            authenticate();
+        }
+        else
+        {
+            m_AuthenticateThread.start();
+        }
+    }
+}
+
+void LastFmScrobbler::authenticate()
+{
+    try
+    {
+        m_pLastFmClient->handshake(m_Username, m_Password);
+        m_Log.info("Authentication successfull for user: " + m_Username);
+        m_HardConnectionFailureCount = 0;
+        m_Authenticated = true;
+    }
+    catch (ConnectionError& e)
+    {
+        ++m_HardConnectionFailureCount;
+        m_LastConnectionAttempt = time(NULL);
+    }
+    catch (logic_error& e)
+    {
+        m_Log.error(e.what());
     }
 }
 
@@ -144,25 +188,13 @@ bool LastFmScrobbler::canReconnect()
 void* LastFmScrobbler::authenticateThread(void* pInstance)
 {
     LastFmScrobbler* pScrobbler = reinterpret_cast<LastFmScrobbler*>(pInstance);
+    pScrobbler->m_Log.info("Authenticate thread started");
 
-    try
+    pScrobbler->authenticate();
+
     {
-        pScrobbler->m_pLastFmClient->handshake(pScrobbler->m_Username, pScrobbler->m_Password);
-        pScrobbler->m_Log.info("Authentication successfull for user: " + pScrobbler->m_Username);
-        pScrobbler->m_HardConnectionFailureCount = 0;
-        pScrobbler->m_Authenticated = true;
-
         ScopedLock lock(pScrobbler->m_AuthenticatedMutex);
         pScrobbler->m_AuthenticatedCondition.broadcast();
-    }
-    catch (ConnectionError& e)
-    {
-        ++(pScrobbler->m_HardConnectionFailureCount);
-        pScrobbler->m_LastConnectionAttempt = time(NULL);
-    }
-    catch (logic_error& e)
-    {
-        pScrobbler->m_Log.error(e.what());
     }
 
     pScrobbler->m_Log.info("Authenticate thread finished");
@@ -178,22 +210,20 @@ void* LastFmScrobbler::sendInfoThread(void* pInstance)
         ScopedLock lock(pScrobbler->m_AuthenticatedMutex);
         if (!pScrobbler->m_Authenticated)
         {
-            if (!pScrobbler->m_AuthenticatedCondition.wait(pScrobbler->m_AuthenticatedMutex, 2000))
+            if (!pScrobbler->m_AuthenticatedCondition.wait(pScrobbler->m_AuthenticatedMutex, 4000))
             {
                 pScrobbler->m_Log.info("send info terminated because no connection");
                 pScrobbler->submitTrack(pScrobbler->m_PreviousTrackInfo);
-                pScrobbler->m_TrackPlayTime = 0;
-                pScrobbler->m_TrackResumeTime = pScrobbler->m_CurrentTrackInfo.getTimeStarted();
                 return NULL;
             }
-            pScrobbler->m_Log.info("Good to go");
         }
     }
 
-    pScrobbler->submitTrack(pScrobbler->m_PreviousTrackInfo);
-    pScrobbler->m_TrackPlayTime = 0;
-    pScrobbler->m_TrackResumeTime = pScrobbler->m_CurrentTrackInfo.getTimeStarted();
-    pScrobbler->setNowPlaying();
+    if (pScrobbler->m_Authenticated)
+    {
+        pScrobbler->submitTrack(pScrobbler->m_PreviousTrackInfo);
+        pScrobbler->setNowPlaying();
+    }
 
     pScrobbler->m_Log.info("sendInfo thread finished");
     return NULL;
@@ -201,7 +231,11 @@ void* LastFmScrobbler::sendInfoThread(void* pInstance)
 
 void LastFmScrobbler::setNowPlaying()
 {
-    printf("set m_TrackResumeTime: %d\n", m_TrackResumeTime);
+    if (!m_Authenticated)
+    {
+        m_Log.info("Can't set Now Playing status: not authenticated");
+        return;
+    }
 
     try
     {
@@ -262,6 +296,11 @@ void LastFmScrobbler::submitTrack(const SubmissionInfo& info)
 
 void LastFmScrobbler::joinThreads()
 {
+    if (m_Synchronous)
+    {
+        return;
+    }
+
     {
         ScopedLock lock(m_AuthenticatedMutex);
         m_AuthenticatedCondition.broadcast();
