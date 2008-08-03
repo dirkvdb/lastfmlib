@@ -109,7 +109,6 @@ void LastFmScrobbler::finishedPlaying()
 bool LastFmScrobbler::trackCanBeCommited(const SubmissionInfo& info)
 {
     time_t curTime = time(NULL);
-    printf("playtime: %d - %d\n", m_TrackPlayTime, m_TrackResumeTime);
     m_TrackPlayTime += curTime - m_TrackResumeTime;
 
     bool trackTooShort = info.getTrackLength() < MIN_TRACK_LENGTH_TO_SUBMIT;
@@ -117,18 +116,12 @@ bool LastFmScrobbler::trackCanBeCommited(const SubmissionInfo& info)
             m_TrackPlayTime >= MIN_SECONDS_TO_SUBMIT
         ||  m_TrackPlayTime >= (info.getTrackLength() / 2);
 
-    printf("%d\n", curTime);
-    printf("%d - %d - %d\n", m_TrackPlayTime, info.getTrackLength() / 2, m_TrackResumeTime);
-
     if (trackTooShort)
     {
         m_Log.info("Track \"" + info.getTrack() + "\" can't be committed: length is too short");
     }
     else if (!trackPlayedLongEnough)
     {
-        stringstream ss;
-        ss << "playtime: " << m_TrackPlayTime << " - " << m_TrackResumeTime;
-        m_Log.info(ss.str());
         m_Log.info("Track \"" + info.getTrack() + "\" can't be committed: not played long enough");
     }
     else
