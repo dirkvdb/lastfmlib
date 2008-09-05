@@ -52,6 +52,11 @@ protected:
     time_t          m_TrackPlayTime;
     /** \brief The time that the current track was resumed after a pause */
     time_t          m_TrackResumeTime;
+    /** \brief Thread handle of authentication thread (protected for testing) */
+    utils::Thread   m_AuthenticateThread;
+    /** \brief Thread handle of sendinfo thread (protected for testing) */
+    utils::Thread   m_SendInfoThread;
+
 
 private:
     void authenticateIfNecessary();
@@ -66,9 +71,6 @@ private:
 
     static void* authenticateThread(void* pInstance);
     static void* sendInfoThread(void* pInstance);
-
-    utils::Thread               m_AuthenticateThread;
-    utils::Thread               m_SendInfoThread;
 
     SubmissionInfo              m_PreviousTrackInfo;
     SubmissionInfo              m_CurrentTrackInfo;

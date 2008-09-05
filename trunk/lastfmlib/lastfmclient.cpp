@@ -17,7 +17,7 @@
 using namespace std;
 using namespace StringOperations;
 
-static const string CLIENT_IDENTIFIER = "tst";
+static const string CLIENT_IDENTIFIER = "lfc";
 static const string CLIENT_VERSION = "1.0";
 
 void LastFmClient::handshake(const string& user, const string& pass)
