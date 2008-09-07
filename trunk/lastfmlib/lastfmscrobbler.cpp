@@ -29,6 +29,7 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool sy
 , m_Password(pass)
 , m_Log("/tmp/lastfmliblog.txt")
 , m_Synchronous(synchronous)
+, m_CommitOnly(false)
 {
     authenticateIfNecessary();
 }
@@ -44,6 +45,7 @@ LastFmScrobbler::LastFmScrobbler(bool synchronous)
 , m_HardConnectionFailureCount(0)
 , m_Log("/tmp/lastfmliblog.txt")
 , m_Synchronous(synchronous)
+, m_CommitOnly(false)
 {
 }
 
@@ -51,6 +53,11 @@ LastFmScrobbler::~LastFmScrobbler()
 {
     joinThreads();
     delete m_pLastFmClient;
+}
+
+void LastFmScrobbler::setCommitOnlyMode(bool enabled)
+{
+    m_CommitOnly = enabled;
 }
 
 void LastFmScrobbler::startedPlaying(const SubmissionInfo& info)
@@ -72,7 +79,10 @@ void LastFmScrobbler::startedPlaying(const SubmissionInfo& info)
     if (m_Synchronous)
     {
         submitTrack(m_PreviousTrackInfo);
-        setNowPlaying();
+        if (!m_CommitOnly)
+        {
+            setNowPlaying();
+        }
     }
     else
     {
@@ -215,7 +225,10 @@ void* LastFmScrobbler::sendInfoThread(void* pInstance)
     if (pScrobbler->m_Authenticated)
     {
         pScrobbler->submitTrack(pScrobbler->m_PreviousTrackInfo);
-        pScrobbler->setNowPlaying();
+        if (!pScrobbler->m_CommitOnly)
+        {
+            pScrobbler->setNowPlaying();
+        }
     }
 
     pScrobbler->m_Log.info("sendInfo thread finished");

@@ -34,55 +34,58 @@
 <a name="l00026"></a>00026     LastFmScrobbler(<span class="keyword">const</span> std::string&amp; user, <span class="keyword">const</span> std::string&amp; pass, <span class="keywordtype">bool</span> synchronous);
 <a name="l00028"></a>00028     <span class="keyword">virtual</span> ~LastFmScrobbler();
 <a name="l00029"></a>00029 
-<a name="l00036"></a>00036     <span class="keywordtype">void</span> startedPlaying(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
-<a name="l00040"></a>00040     <span class="keywordtype">void</span> finishedPlaying();
-<a name="l00044"></a>00044     <span class="keywordtype">void</span> pausePlaying(<span class="keywordtype">bool</span> paused);
-<a name="l00045"></a>00045 
-<a name="l00046"></a>00046 <span class="keyword">protected</span>:
-<a name="l00047"></a>00047     LastFmScrobbler(<span class="keywordtype">bool</span> synchronous);
-<a name="l00048"></a>00048     <a class="code" href="classLastFmClient.html">LastFmClient</a>*   m_pLastFmClient;
-<a name="l00050"></a>00050     time_t          m_LastConnectionAttempt;
-<a name="l00052"></a>00052     time_t          m_TrackPlayTime;
-<a name="l00054"></a>00054     time_t          m_TrackResumeTime;
-<a name="l00056"></a>00056     utils::Thread   m_AuthenticateThread;
-<a name="l00058"></a>00058     utils::Thread   m_SendInfoThread;
-<a name="l00059"></a>00059 
-<a name="l00060"></a>00060 
-<a name="l00061"></a>00061 <span class="keyword">private</span>:
-<a name="l00062"></a>00062     <span class="keywordtype">void</span> authenticateIfNecessary();
-<a name="l00063"></a>00063     <span class="keywordtype">void</span> authenticate();
-<a name="l00064"></a>00064     <span class="keywordtype">bool</span> trackCanBeCommited(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
-<a name="l00065"></a>00065     <span class="keywordtype">bool</span> canReconnect();
-<a name="l00066"></a>00066     <span class="keywordtype">void</span> submitTrack(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
-<a name="l00067"></a>00067     <span class="keywordtype">void</span> setNowPlaying();
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069     <span class="keywordtype">void</span> startThread(pthread_t* pThread, utils::ThreadFunction pfnThreadFunction);
-<a name="l00070"></a>00070     <span class="keywordtype">void</span> joinThreads();
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072     <span class="keyword">static</span> <span class="keywordtype">void</span>* authenticateThread(<span class="keywordtype">void</span>* pInstance);
-<a name="l00073"></a>00073     <span class="keyword">static</span> <span class="keywordtype">void</span>* sendInfoThread(<span class="keywordtype">void</span>* pInstance);
+<a name="l00034"></a>00034     <span class="keywordtype">void</span> setCommitOnlyMode(<span class="keywordtype">bool</span> enabled);
+<a name="l00035"></a>00035 
+<a name="l00042"></a>00042     <span class="keywordtype">void</span> startedPlaying(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
+<a name="l00046"></a>00046     <span class="keywordtype">void</span> finishedPlaying();
+<a name="l00050"></a>00050     <span class="keywordtype">void</span> pausePlaying(<span class="keywordtype">bool</span> paused);
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="keyword">protected</span>:
+<a name="l00053"></a>00053     LastFmScrobbler(<span class="keywordtype">bool</span> synchronous);
+<a name="l00054"></a>00054     <a class="code" href="classLastFmClient.html">LastFmClient</a>*   m_pLastFmClient;
+<a name="l00056"></a>00056     time_t          m_LastConnectionAttempt;
+<a name="l00058"></a>00058     time_t          m_TrackPlayTime;
+<a name="l00060"></a>00060     time_t          m_TrackResumeTime;
+<a name="l00062"></a>00062     utils::Thread   m_AuthenticateThread;
+<a name="l00064"></a>00064     utils::Thread   m_SendInfoThread;
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 <span class="keyword">private</span>:
+<a name="l00068"></a>00068     <span class="keywordtype">void</span> authenticateIfNecessary();
+<a name="l00069"></a>00069     <span class="keywordtype">void</span> authenticate();
+<a name="l00070"></a>00070     <span class="keywordtype">bool</span> trackCanBeCommited(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
+<a name="l00071"></a>00071     <span class="keywordtype">bool</span> canReconnect();
+<a name="l00072"></a>00072     <span class="keywordtype">void</span> submitTrack(<span class="keyword">const</span> <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>&amp; info);
+<a name="l00073"></a>00073     <span class="keywordtype">void</span> setNowPlaying();
 <a name="l00074"></a>00074 
-<a name="l00075"></a>00075     <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>              m_PreviousTrackInfo;
-<a name="l00076"></a>00076     <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>              m_CurrentTrackInfo;
-<a name="l00077"></a>00077     SubmissionInfoCollection    m_BufferedTrackInfos;
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079     <span class="keywordtype">bool</span>                        m_Authenticated;
-<a name="l00080"></a>00080     <span class="keywordtype">int</span>                         m_HardConnectionFailureCount;
-<a name="l00081"></a>00081     utils::Condition            m_AuthenticatedCondition;
-<a name="l00082"></a>00082     utils::Mutex                m_AuthenticatedMutex;
-<a name="l00083"></a>00083     utils::Mutex                m_TrackInfosMutex;
+<a name="l00075"></a>00075     <span class="keywordtype">void</span> startThread(pthread_t* pThread, utils::ThreadFunction pfnThreadFunction);
+<a name="l00076"></a>00076     <span class="keywordtype">void</span> joinThreads();
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078     <span class="keyword">static</span> <span class="keywordtype">void</span>* authenticateThread(<span class="keywordtype">void</span>* pInstance);
+<a name="l00079"></a>00079     <span class="keyword">static</span> <span class="keywordtype">void</span>* sendInfoThread(<span class="keywordtype">void</span>* pInstance);
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081     <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>              m_PreviousTrackInfo;
+<a name="l00082"></a>00082     <a class="code" href="classSubmissionInfo.html">SubmissionInfo</a>              m_CurrentTrackInfo;
+<a name="l00083"></a>00083     SubmissionInfoCollection    m_BufferedTrackInfos;
 <a name="l00084"></a>00084 
-<a name="l00085"></a>00085     std::string                 m_Username;
-<a name="l00086"></a>00086     std::string                 m_Password;
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088     utils::Log                  m_Log;
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090     <span class="keywordtype">bool</span>                        m_Synchronous;
-<a name="l00091"></a>00091 };
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 <span class="preprocessor">#endif</span>
+<a name="l00085"></a>00085     <span class="keywordtype">bool</span>                        m_Authenticated;
+<a name="l00086"></a>00086     <span class="keywordtype">int</span>                         m_HardConnectionFailureCount;
+<a name="l00087"></a>00087     utils::Condition            m_AuthenticatedCondition;
+<a name="l00088"></a>00088     utils::Mutex                m_AuthenticatedMutex;
+<a name="l00089"></a>00089     utils::Mutex                m_TrackInfosMutex;
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091     std::string                 m_Username;
+<a name="l00092"></a>00092     std::string                 m_Password;
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094     utils::Log                  m_Log;
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096     <span class="keywordtype">bool</span>                        m_Synchronous;
+<a name="l00097"></a>00097     <span class="keywordtype">bool</span>                        m_CommitOnly;
+<a name="l00098"></a>00098 };
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100 <span class="preprocessor">#endif</span>
 </pre></div></div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 5 19:46:11 2008 for lastfmlib by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Sun Sep 7 13:55:49 2008 for lastfmlib by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>
