@@ -62,7 +62,8 @@ protected:
     utils::Thread   m_AuthenticateThread;
     /** \brief Thread handle of sendinfo thread (protected for testing) */
     utils::Thread   m_SendInfoThread;
-
+    /** \brief Thread handle of finishPlaying thread (protected for testing) */
+    utils::Thread   m_FinishPlayingThread;
 
 private:
     void authenticateIfNecessary();
@@ -77,6 +78,7 @@ private:
 
     static void* authenticateThread(void* pInstance);
     static void* sendInfoThread(void* pInstance);
+    static void* finishPlayingThread(void* pInstance);
 
     SubmissionInfo              m_PreviousTrackInfo;
     SubmissionInfo              m_CurrentTrackInfo;

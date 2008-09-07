@@ -4,8 +4,11 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
+
+typedef unsigned long long uint64;
 
 namespace utils
 {
@@ -31,13 +34,14 @@ void Condition::wait(Mutex& mutex)
 
 bool Condition::wait(Mutex& mutex, int timeoutInMs)
 {
-    struct timespec timeoutTime;
-    clock_gettime(CLOCK_REALTIME, &timeoutTime);
+    struct timeval currentTime;
+    gettimeofday(&currentTime, NULL);
 
-    long long nanoSeconds = timeoutInMs * 1000 + timeoutTime.tv_sec;
+    struct timespec timeoutTime;
+    uint64 nanoSeconds = (static_cast<uint64>(timeoutInMs) * 1000000) + (static_cast<uint64>(currentTime.tv_usec) * 1000);
     int seconds = nanoSeconds / 1000000000;
 
-    timeoutTime.tv_sec += seconds;
+    timeoutTime.tv_sec += currentTime.tv_sec + seconds;
     timeoutTime.tv_nsec = static_cast<long>(nanoSeconds % 1000000000);
 
     int ret = pthread_cond_timedwait(&m_Condition, mutex.getHandle(), &timeoutTime);
