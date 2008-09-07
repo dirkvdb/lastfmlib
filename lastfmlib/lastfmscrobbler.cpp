@@ -23,6 +23,7 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool sy
 , m_TrackResumeTime(0)
 , m_AuthenticateThread(LastFmScrobbler::authenticateThread, this)
 , m_SendInfoThread(LastFmScrobbler::sendInfoThread, this)
+, m_FinishPlayingThread(LastFmScrobbler::finishPlayingThread, this)
 , m_Authenticated(false)
 , m_HardConnectionFailureCount(0)
 , m_Username(user)
@@ -41,6 +42,7 @@ LastFmScrobbler::LastFmScrobbler(bool synchronous)
 , m_TrackResumeTime(0)
 , m_AuthenticateThread(LastFmScrobbler::authenticateThread, this)
 , m_SendInfoThread(LastFmScrobbler::sendInfoThread, this)
+, m_FinishPlayingThread(LastFmScrobbler::finishPlayingThread, this)
 , m_Authenticated(false)
 , m_HardConnectionFailureCount(0)
 , m_Log("/tmp/lastfmliblog.txt")
@@ -112,7 +114,7 @@ void LastFmScrobbler::finishedPlaying()
     }
     else
     {
-        m_Log.error("async finish not implemented yet!!");
+        m_FinishPlayingThread.start();
     }
 }
 
@@ -235,6 +237,30 @@ void* LastFmScrobbler::sendInfoThread(void* pInstance)
     return NULL;
 }
 
+void* LastFmScrobbler::finishPlayingThread(void* pInstance)
+{
+    LastFmScrobbler* pScrobbler = reinterpret_cast<LastFmScrobbler*>(pInstance);
+    pScrobbler->m_Log.info("finishPlaying thread started");
+
+    {
+        ScopedLock lock(pScrobbler->m_AuthenticatedMutex);
+        if (!pScrobbler->m_Authenticated)
+        {
+            //Program is probalby cleaning up, dont't try to start
+            //authentication
+            return NULL;
+        }
+    }
+
+    if (pScrobbler->m_Authenticated)
+    {
+        pScrobbler->submitTrack(pScrobbler->m_PreviousTrackInfo);
+    }
+
+    pScrobbler->m_Log.info("finishPlaying thread finished");
+    return NULL;
+}
+
 void LastFmScrobbler::setNowPlaying()
 {
     if (!m_Authenticated)
@@ -314,4 +340,5 @@ void LastFmScrobbler::joinThreads()
 
     m_AuthenticateThread.join();
     m_SendInfoThread.join();
+    m_FinishPlayingThread.join();
 }
