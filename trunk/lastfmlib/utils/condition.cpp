@@ -4,7 +4,6 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <stdexcept>
-#include <iostream>
 
 using namespace std;
 
