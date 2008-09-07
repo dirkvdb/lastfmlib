@@ -27,6 +27,12 @@ public:
     /** Destructor */
     virtual ~LastFmScrobbler();
 
+    /** When commit only mode is set, now playinginfo is not updated on
+     * Last.fm, tracks will only be commited once they finished playing
+     * \param enabled set commitOnlyMode to true or false
+     */
+    void setCommitOnlyMode(bool enabled);
+
     /** Indicate that a new track has started playing, the previous track
      * will be submitted (if available) and the new track will be set as
      * Now Playing
@@ -88,6 +94,7 @@ private:
     utils::Log                  m_Log;
 
     bool                        m_Synchronous;
+    bool                        m_CommitOnly;
 };
 
 #endif
