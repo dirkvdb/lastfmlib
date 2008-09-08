@@ -23,7 +23,7 @@ liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
 				lastfmlib/utils/mutex.cpp \
                                 lastfmlib/utils/thread.h \
 				lastfmlib/utils/thread.cpp \
-                                lastfmlib/lastfmlib/utils/scopedlock.h \
+                                lastfmlib/utils/scopedlock.h \
 				lastfmlib/utils/scopedlock.cpp \
                                 lastfmlib/utils/condition.h \
 				lastfmlib/utils/condition.cpp \
