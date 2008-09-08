@@ -23,6 +23,8 @@ class SubmissionInfoCollection;
 class LastFmClient
 {
 public:
+    virtual ~LastFmClient() {}
+
     /** Attempt to authenticate with the Last.fm server
      * \param user an std::string containing the username
      * \param pass an std::string containing the password

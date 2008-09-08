@@ -201,7 +201,7 @@ Index: src/lastfm.cc
 ===================================================================
 --- src/lastfm.cc	(revision 0)
 +++ src/lastfm.cc	(revision 0)
-@@ -0,0 +1,92 @@
+@@ -0,0 +1,98 @@
 +/// \file lastfm.cc
 +
 +#ifdef HAVE_CONFIG_H
@@ -238,18 +238,24 @@ Index: src/lastfm.cc
 +{
 +    Ref<ConfigManager> config = ConfigManager::getInstance();
 +
-+    String username = config->getOption(CFG_LASTFM_USERNAME);
-+    String password = config->getOption(CFG_LASTFM_PASSWORD);
-+    delete scrobbler;
-+    scrobbler = new LastFmScrobbler(username.c_str(), password.c_str(), false);
-+    scrobbler->setCommitOnlyMode(true);
++    if (config->getBoolOption(CFG_LASTFM_ENABLED))
++    {
++        String username = config->getOption(CFG_LASTFM_USERNAME);
++        String password = config->getOption(CFG_LASTFM_PASSWORD);
++        delete scrobbler;
++        scrobbler = new LastFmScrobbler(username.c_str(), password.c_str(), false);
++        scrobbler->setCommitOnlyMode(true);
++    }
 +}
 +
 +void LastFm::destroy()
 +{
-+    scrobbler->finishedPlaying();
-+    delete scrobbler;
-+    scrobbler = NULL;
++    if (scrobbler)
++    {
++        scrobbler->finishedPlaying();
++        delete scrobbler;
++        scrobbler = NULL;
++    }
 +}
 +
 +int timeToSeconds(const char* time)
