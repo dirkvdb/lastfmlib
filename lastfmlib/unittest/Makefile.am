@@ -12,7 +12,7 @@ testrunner_SOURCES =    testrunner.cpp\
                         submissioninfocollectiontest.cpp\
                         lastfmclientmock.h lastfmclientmock.cpp
 
-testrunner_LDFLAGS  =   $(top_builddir)/lastfmlib/liblastfm.la
+testrunner_LDFLAGS  =   $(top_builddir)/liblastfm.la
 testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) $(LOG4CPP_LIBS)
 INCLUDES            =   -I$(top_srcdir)
 
