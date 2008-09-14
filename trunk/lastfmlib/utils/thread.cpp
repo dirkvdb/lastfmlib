@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <string.h>
 
 
 namespace utils

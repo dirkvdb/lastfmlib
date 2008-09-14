@@ -3,6 +3,7 @@
 #include "mutex.h"
 #include <sys/time.h>
 #include <errno.h>
+#include <string.h>
 #include <stdexcept>
 
 using namespace std;
