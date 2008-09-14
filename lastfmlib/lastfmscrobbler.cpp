@@ -4,7 +4,6 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <sstream>
 #include <signal.h>
 #include <algorithm>
 
@@ -70,13 +69,13 @@ void LastFmScrobbler::startedPlaying(const SubmissionInfo& info)
     m_PreviousTrackInfo = m_CurrentTrackInfo;
     m_CurrentTrackInfo = info;
 
-    m_TrackPlayTime = 0;
-    m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
-
     if (m_CurrentTrackInfo.getTimeStarted() < 0)
     {
         m_CurrentTrackInfo.setTimeStarted(time(NULL));
     }
+
+    m_TrackPlayTime = 0;
+    m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
 
     if (m_Synchronous)
     {
@@ -246,8 +245,7 @@ void* LastFmScrobbler::finishPlayingThread(void* pInstance)
         ScopedLock lock(pScrobbler->m_AuthenticatedMutex);
         if (!pScrobbler->m_Authenticated)
         {
-            //Program is probalby cleaning up, dont't try to start
-            //authentication
+            //Program is probalby cleaning up, dont't try to start authentication
             return NULL;
         }
     }
