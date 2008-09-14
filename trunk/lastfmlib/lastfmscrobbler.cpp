@@ -74,9 +74,6 @@ void LastFmScrobbler::startedPlaying(const SubmissionInfo& info)
         m_CurrentTrackInfo.setTimeStarted(time(NULL));
     }
 
-    m_TrackPlayTime = 0;
-    m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
-
     if (m_Synchronous)
     {
         submitTrack(m_PreviousTrackInfo);
@@ -287,6 +284,8 @@ void LastFmScrobbler::submitTrack(const SubmissionInfo& info)
     if (info.getTrackLength() < 0 || !trackCanBeCommited(info))
     {
         m_Log.info("Won't submit");
+        m_TrackPlayTime = 0;
+        m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
         return;
     }
     else
@@ -322,6 +321,9 @@ void LastFmScrobbler::submitTrack(const SubmissionInfo& info)
     {
         m_Log.error(e.what());
     }
+
+    m_TrackPlayTime = 0;
+    m_TrackResumeTime = m_CurrentTrackInfo.getTimeStarted();
 }
 
 void LastFmScrobbler::joinThreads()
