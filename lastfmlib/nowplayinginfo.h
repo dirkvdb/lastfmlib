@@ -21,11 +21,23 @@ public:
     /** \brief returns the postdata needed to submit the info to Last.fm, used by LastFmClient */
     std::string getPostData() const;
 
+
+    /** \brief sets the artist of the track */
+    void setArtist(const std::string& artist);
+    /** \brief sets the artist of the track (unicode) */
+    void setArtist(const std::wstring& artist);
+
+    /** \brief sets the title of the track */
+    void setTrack(const std::string& track);
+    /** \brief sets the title of the track (unicode) */
+    void setTrack(const std::wstring& track);
     /** \brief sets the album of the track */
+
     void setAlbum(const std::string& album);
     /** \brief sets the album of the track (unicode) */
     void setAlbum(const std::wstring& album);
     /** \brief sets the track length (in seconds) */
+
     void setTrackLength(int lengthInSecs);
     /** \brief sets the track number */
     void setTrackNr(int trackNr);

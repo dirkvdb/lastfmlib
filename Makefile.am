@@ -3,35 +3,38 @@ SUBDIRS = lastfmlib
 lib_LTLIBRARIES = liblastfm.la
 
 liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
-				lastfmlib/urlclient.cpp \
+                                lastfmlib/urlclient.cpp \
                                 lastfmlib/lastfmclient.h \
-				lastfmlib/lastfmclient.cpp \
+                                lastfmlib/lastfmclient.cpp \
                                 lastfmlib/lastfmscrobbler.h \
-				lastfmlib/lastfmscrobbler.cpp \
+                                lastfmlib/lastfmscrobbler.cpp \
+                                lastfmlib/lastfmscrobblerc.h \
+                                lastfmlib/lastfmscrobblerc.cpp \
                                 lastfmlib/nowplayinginfo.h \
-				lastfmlib/nowplayinginfo.cpp \
+                                lastfmlib/nowplayinginfo.cpp \
                                 lastfmlib/submissioninfo.h \
-				lastfmlib/submissioninfo.cpp \
+                                lastfmlib/submissioninfo.cpp \
                                 lastfmlib/submissioninfocollection.h \
-				lastfmlib/submissioninfocollection.cpp \
+                                lastfmlib/submissioninfocollection.cpp \
                                 lastfmlib/lastfmexceptions.h \
                                 lastfmlib/md5/md5.h \
-				lastfmlib/md5/md5.c \
+                                lastfmlib/md5/md5.c \
                                 lastfmlib/utils/stringoperations.h \
-				lastfmlib/utils/stringoperations.cpp \
+                                lastfmlib/utils/stringoperations.cpp \
                                 lastfmlib/utils/mutex.h \
-				lastfmlib/utils/mutex.cpp \
+                                lastfmlib/utils/mutex.cpp \
                                 lastfmlib/utils/thread.h \
-				lastfmlib/utils/thread.cpp \
+                                lastfmlib/utils/thread.cpp \
                                 lastfmlib/utils/scopedlock.h \
-				lastfmlib/utils/scopedlock.cpp \
+                                lastfmlib/utils/scopedlock.cpp \
                                 lastfmlib/utils/condition.h \
-				lastfmlib/utils/condition.cpp \
+                                lastfmlib/utils/condition.cpp \
                                 lastfmlib/utils/log.h \
-				lastfmlib/utils/log.cpp
+                                lastfmlib/utils/log.cpp
 
-nobase_include_HEADERS   =   	lastfmlib/lastfmclient.h \
+nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
                                 lastfmlib/lastfmscrobbler.h \
+                                lastfmlib/lastfmscrobblerc.h \
                                 lastfmlib/nowplayinginfo.h \
                                 lastfmlib/submissioninfo.h \
                                 lastfmlib/submissioninfocollection.h \
