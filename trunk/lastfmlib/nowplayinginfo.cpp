@@ -39,6 +39,26 @@ string NowPlayingInfo::getPostData() const
     return ss.str();
 }
 
+void NowPlayingInfo::setArtist(const std::string& artist)
+{
+    m_Artist = artist;
+}
+
+void NowPlayingInfo::setArtist(const std::wstring& artist)
+{
+    StringOperations::wideCharToUtf8(artist, m_Artist);
+}
+
+void NowPlayingInfo::setTrack(const std::string& track)
+{
+    m_Track = track;
+}
+
+void NowPlayingInfo::setTrack(const std::wstring& track)
+{
+    StringOperations::wideCharToUtf8(track, m_Track);
+}
+
 void NowPlayingInfo::setAlbum(const std::string& album)
 {
     m_Album = album;
