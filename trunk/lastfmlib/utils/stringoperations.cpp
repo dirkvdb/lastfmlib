@@ -1,4 +1,4 @@
-//    Copyright (C) 2007 Dirk Vanden Boer <dirk.vdb@gmail.com>
+//    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ void replace(std::string& aString, const std::string& toSearch, const std::strin
 {
     size_t startPos = 0;
     size_t foundPos;
-    
+
     while (std::string::npos != (foundPos = aString.find(toSearch, startPos)))
     {
         aString.replace(foundPos, toSearch.length(), toReplace);
@@ -55,7 +55,7 @@ void dos2unix(std::string& aString)
 string urlEncode(const string& aString)
 {
     stringstream result;
-    
+
     for (size_t i = 0; i < aString.size(); ++i)
     {
         int curChar = static_cast<int>(static_cast<unsigned char>(aString[i]));
@@ -88,14 +88,14 @@ vector<string> tokenize(const string& str, const string& delimiter)
     vector<string>    tokens;
     string                 tempString = str;
     size_t                      pos = 0;
-        
+
     while ((pos = tempString.find(delimiter)) != string::npos)
     {
         tokens.push_back(tempString.substr(0, pos));
         tempString.erase(0, pos + delimiter.size());
     }
     tokens.push_back(tempString);
-    
+
     return tokens;
 }
 
