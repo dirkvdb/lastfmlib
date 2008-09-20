@@ -14,6 +14,12 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+/**
+ * @file submissioninfo.h
+ * @brief Contains the SubmissionInfo class
+ * @author Dirk Vanden Boer
+ */
+
 #ifndef SUBMISSION_INFO_H
 #define SUBMISSION_INFO_H
 
@@ -22,6 +28,7 @@
 #include <string>
 
 #include "nowplayinginfo.h"
+#include "lastfmtypes.h"
 
 /** The NowPlayingInfo class contains all the necessary information to
  *  submit a played track to Last.Fm. Artist, Track and StartTime are
@@ -32,28 +39,6 @@
 class SubmissionInfo : public NowPlayingInfo
 {
 public:
-    /** The TrackSource enum contains possible sources fo submitted tracks.
-     * Note: Currently Last.fm only supports UserChosen and Lastfm
-     */
-    enum TrackSource
-    {
-        UserChosen,                 /**< Chosen by the user */
-        NonPersonalizedBroadCast,   /**< Non-personalised broadcast (e.g. Shoutcast, BBC Radio 1) */
-        PersonalizedRecommendation, /**< Personalised recommendation except Last.fm (e.g. Pandora, Launchcast) */
-        Lastfm,                     /**< Last.fm */
-        Unknown                     /**< Unknown source */
-    };
-
-    /** The TrackRating enum contains possible ratings for a track.
-     */
-    enum TrackRating
-    {
-        Love,   /**< On any mode if the user has manually loved the track. This implies a listen */
-        Ban,    /**< Only if source = Lastfm. This implies a skip, and the client should skip to the next track when a ban happens */
-        Skip,   /**< Only if source = Lastfm */
-        None    /**< If no rating is applicable */
-    };
-
     /** \brief Default constructor */
     SubmissionInfo();
     /** \brief Constructor that sets artist ,track and optionally the time the track started playing */
