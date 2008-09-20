@@ -17,6 +17,7 @@ liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
                                 lastfmlib/submissioninfocollection.h \
                                 lastfmlib/submissioninfocollection.cpp \
                                 lastfmlib/lastfmexceptions.h \
+                                lastfmlib/lastfmtypes.h \
                                 lastfmlib/md5/md5.h \
                                 lastfmlib/md5/md5.c \
                                 lastfmlib/utils/stringoperations.h \
@@ -33,12 +34,13 @@ liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
                                 lastfmlib/utils/log.cpp
 
 nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
+                                lastfmlib/lastfmexceptions.h \
+                                lastfmlib/lastfmtypes.h \
                                 lastfmlib/lastfmscrobbler.h \
                                 lastfmlib/lastfmscrobblerc.h \
                                 lastfmlib/nowplayinginfo.h \
                                 lastfmlib/submissioninfo.h \
                                 lastfmlib/submissioninfocollection.h \
-                                lastfmlib/lastfmexceptions.h \
                                 lastfmlib/urlclient.h \
                                 lastfmlib/utils/thread.h \
                                 lastfmlib/utils/mutex.h \
@@ -46,7 +48,6 @@ nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
                                 lastfmlib/utils/condition.h \
                                 lastfmlib/utils/log.h
 
-#liblastfm_includedir        =   $(includedir)/lastfmlib
 liblastfm_la_CXXFLAGS       =   $(LOG4CPP_CFLAGS)
 liblastfm_la_LDFLAGS        =   -version-info 1:0:0
 liblastfm_la_LIBADD         =   $(CURL_LIBS) $(LOG4CPP_LIBS)

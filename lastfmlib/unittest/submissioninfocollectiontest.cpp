@@ -16,13 +16,13 @@ SUITE(SubmissionInfoCollectionTest)
         info1.setAlbum("An Album1");
         info1.setTrackLength(1);
         info1.setTrackNr(1);
-        info1.setSource(SubmissionInfo::UserChosen);
+        info1.setSource(UserChosen);
 
         SubmissionInfo info2("The Artist2", "Trackname2", 200);
         info2.setAlbum("An Album2");
         info2.setTrackLength(2);
         info2.setTrackNr(2);
-        info2.setSource(SubmissionInfo::Unknown);
+        info2.setSource(Unknown);
 
         SubmissionInfoCollection collection;
         collection.addInfo(info1);

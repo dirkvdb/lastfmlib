@@ -31,6 +31,8 @@ extern "C"
 {
 #endif
 
+#include "lastfmtypes.h"
+
 struct AVFormatContext;
 
 typedef struct lastfm_scrobbler_struct
@@ -40,18 +42,22 @@ typedef struct lastfm_scrobbler_struct
 
 typedef struct submission_info_struct
 {
-    char*           artist;               /**< \brief the artist */
-    char*           track;                /**< \brief the track title */
-    char*           album;                /**< \brief the album */
+    char*               artist;               /**< \brief the artist */
+    char*               track;                /**< \brief the track title */
+    char*               album;                /**< \brief the album */
 
-    wchar_t*        artist_wide;          /**< \brief the artist in widechar*/
-    wchar_t*        track_wide;           /**< \brief the track title in widechar*/
-    wchar_t*        album_wide;           /**< \brief the album in widechar*/
+    wchar_t*            artist_wide;          /**< \brief the artist in widechar*/
+    wchar_t*            track_wide;           /**< \brief the track title in widechar*/
+    wchar_t*            album_wide;           /**< \brief the album in widechar*/
 
-    int             track_length_in_secs; /**< \brief the track length (in seconds) */
-    int             track_nr;             /**< \brief the track number */
-    char*           music_brainz_id;      /**< \brief the Music Brainz Id */
-    time_t          time_started;         /**< \brief time the track started (-1 for now, default -1) */
+    int                 track_length_in_secs; /**< \brief the track length (in seconds) */
+    int                 track_nr;             /**< \brief the track number */
+    char*               music_brainz_id;      /**< \brief the Music Brainz Id */
+    time_t              time_started;         /**< \brief time the track started (-1 for current time, default -1) */
+
+    enum TrackSource    track_source;         /**< \brief time the track source (default UserChosen) */
+    enum TrackRating    track_rating;         /**< \brief time the track started (default None) */
+    char*               recommendation_key;   /**< \brief The 5-digit Last.fm recommendation key needed when track_source is set to LastFm (default NULL) */
 } submission_info; /**< \brief struct containing info about the song to commit */
 
 /** Create Last.fm scrobbler struct

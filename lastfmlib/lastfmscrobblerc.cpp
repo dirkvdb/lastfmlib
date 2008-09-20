@@ -49,6 +49,10 @@ extern "C" submission_info* create_submission_info()
     info->track_nr                 = -1;
     info->music_brainz_id          = NULL;
 
+    info->track_source             = UserChosen;
+    info->track_rating             = None;
+    info->recommendation_key       = NULL;
+
     return info;
 }
 
@@ -68,6 +72,12 @@ extern "C" void started_playing(lastfm_scrobbler* scrobbler, const submission_in
     submissionInfo.setTimeStarted(info->time_started);
     submissionInfo.setTrackLength(info->track_length_in_secs);
     submissionInfo.setTrackNr(info->track_nr);
+    submissionInfo.setRating(info->track_rating);
+
+    if (info->recommendation_key)
+        submissionInfo.setSource(info->track_source, info->recommendation_key);
+    else
+        submissionInfo.setSource(info->track_source);
 
     if (info->artist_wide)
         submissionInfo.setArtist(info->artist_wide);
