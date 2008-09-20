@@ -1,5 +1,3 @@
-SUBDIRS = lastfmlib
-
 lib_LTLIBRARIES = liblastfm.la
 
 liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
@@ -57,3 +55,21 @@ ACLOCAL_AMFLAGS = -I m4
 
 pkgconfigdir = @pkgconfigdir@
 pkgconfig_DATA = lastfmlib.pc
+
+if ENABLE_UNITTEST
+check_PROGRAMS = testrunner
+endif
+
+testrunner_SOURCES =    lastfmlib/unittest/testrunner.cpp \
+                        lastfmlib/unittest/lastfmclienttest.cpp \
+                        lastfmlib/unittest/lastfmscrobblertest.cpp \
+                        lastfmlib/unittest/stringoperationstest.cpp \
+                        lastfmlib/unittest/nowplayinginfotest.cpp \
+                        lastfmlib/unittest/submissioninfotest.cpp \
+                        lastfmlib/unittest/submissioninfocollectiontest.cpp \
+                        lastfmlib/unittest/lastfmclientmock.h \
+                        lastfmlib/unittest/lastfmclientmock.cpp
+
+
+testrunner_LDFLAGS  =   liblastfm.la
+testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) $(LOG4CPP_LIBS)
