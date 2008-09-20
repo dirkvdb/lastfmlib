@@ -53,8 +53,6 @@ AC_CONFIG_FILES([lastfmlib.pc:lastfmlib.pc.in])
 
 AC_OUTPUT([
     Makefile
-    lastfmlib/Makefile
-    lastfmlib/unittest/Makefile
  ])
 
 echo
