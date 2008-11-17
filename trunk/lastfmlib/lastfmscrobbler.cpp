@@ -285,6 +285,12 @@ void LastFmScrobbler::setNowPlaying()
         m_pLastFmClient->nowPlaying(m_CurrentTrackInfo);
         m_Log.info("Now playing info submitted: " + m_CurrentTrackInfo.getArtist() + " - " + m_CurrentTrackInfo.getTrack());
     }
+    catch (BadSessionError& e)
+    {
+        m_Log.info("Session has become invalid: starting new handshake");
+        authenticate();
+        setNowPlaying();
+    }
     catch (ConnectionError& e)
     {
         m_Authenticated = false;
@@ -328,6 +334,12 @@ void LastFmScrobbler::submitTrack(const SubmissionInfo& info)
         {
             m_Log.info("Track info buffered: not connected");
         }
+    }
+    catch (BadSessionError& e)
+    {
+        m_Log.info("Session has become invalid: starting new handshake");
+        authenticate();
+        submitTrack(info);
     }
     catch (ConnectionError& e)
     {

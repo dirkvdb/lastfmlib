@@ -21,6 +21,16 @@ AC_ARG_WITH(pkgconfigdir,
     [pkgconfigdir=${withval}],
     [pkgconfigdir='${libdir}/pkgconfig'])
 
+AC_ARG_ENABLE(debug,
+   [  --enable-debug Build in debug mode ],
+   DEBUG=$enableval)
+
+AM_CONDITIONAL(DEBUG, test "$enable_debug" = "yes")
+
+if test "$DEBUG" = "yes"; then
+    CXXFLAGS="$CXXFLAGS -g -Wall -Werror -Wfatal-errors"
+fi
+
 AC_ARG_ENABLE(logging,
    [  --enable-logging Enables logging of debug messages to file ],
    ENABLE_LOGGING=$enableval)
@@ -29,7 +39,6 @@ if test "$ENABLE_LOGGING" = "yes"; then
     PKG_CHECK_MODULES(LOG4CPP, log4cpp, HAVE_LOG4CPP=yes, AC_MSG_ERROR([ +Could not find log4cpp]))
     AC_SUBST(LOG4CPP_LIBS)
     AC_SUBST(LOG4CPP_CFLAGS)
-    AC_DEFINE(ENABLE_LOGGING)
 fi
 AM_CONDITIONAL(ENABLE_LOGGING, test "$enable_logging" = "yes")
 
@@ -42,7 +51,6 @@ if test "$ENABLE_UNITTEST" = "yes"; then
     PKG_CHECK_MODULES(UNITTEST, unittest++, HAVE_UNITTEST=yes, AC_MSG_ERROR([ +Could not find unittest++]))
     AC_SUBST(UNITTEST_LIBS)
     AC_SUBST(UNITTEST_CFLAGS)
-    AC_DEFINE(ENABLE_UNITTEST)
 fi
 AM_CONDITIONAL(ENABLE_UNITTEST, test "$enable_unittests" = "yes")
 
@@ -68,4 +76,10 @@ if test "x$ENABLE_UNITTEST" = xyes; then
     echo "unittests           : enabled"
 else
     echo "unittests           : disabled"
+fi
+
+if test "x$DEBUG" = xyes; then
+    echo "debug mode          : enabled"
+else
+    echo "debug mode          : disabled"
 fi

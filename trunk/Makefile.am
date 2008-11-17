@@ -50,7 +50,6 @@ liblastfm_la_CXXFLAGS       =   $(LOG4CPP_CFLAGS)
 liblastfm_la_LDFLAGS        =   -version-info 1:0:0
 liblastfm_la_LIBADD         =   $(CURL_LIBS) $(LOG4CPP_LIBS)
 
-AM_CXXFLAGS = -Wall -Wfatal-errors -Werror
 ACLOCAL_AMFLAGS = -I m4
 
 pkgconfigdir = @pkgconfigdir@
