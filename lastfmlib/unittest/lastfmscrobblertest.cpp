@@ -98,4 +98,30 @@ SUITE(LastFmScrobblerTest)
         CHECK(string::npos != post.find("Artist1"));
         CHECK(string::npos != post.find("Artist2"));
     }
+
+    TEST(TestLastFmScrobblerBadSession)
+    {
+        LastFmScrobblerTester scrobbler(true);
+        scrobbler.pMock->m_BadSessionError = true;
+
+        SubmissionInfo info1("Artist1", "Track1");
+        info1.setTrackLength(100);
+
+        scrobbler.startedPlaying(info1);
+
+        CHECK(scrobbler.pMock->m_NowPlayingCalled);
+        CHECK(scrobbler.pMock->m_HandshakeCalled);
+
+        scrobbler.pMock->m_NowPlayingCalled = false;
+        scrobbler.pMock->m_HandshakeCalled = false;
+
+        scrobbler.pMock->m_BadSessionError = true;
+        scrobbler.setTrackPlayTime(100);
+        scrobbler.setCommitOnlyMode(true);
+        scrobbler.startedPlaying(info1);
+
+        CHECK(!scrobbler.pMock->m_NowPlayingCalled);
+        CHECK(scrobbler.pMock->m_SubmitCollectionCalled);
+        CHECK(scrobbler.pMock->m_HandshakeCalled);
+    }
 }

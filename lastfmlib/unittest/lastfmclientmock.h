@@ -22,9 +22,11 @@ public:
 
     bool m_HandShakeThrowConnectionError;
     bool m_HandShakeThrowException;
+    bool m_BadSessionError;
     bool m_NowPlayingCalled;
     bool m_SubmitCalled;
     bool m_SubmitCollectionCalled;
+    bool m_HandshakeCalled;
 
     NowPlayingInfo m_LastRecPlayingInfo;
     SubmissionInfo m_LastRecSubmitInfo;

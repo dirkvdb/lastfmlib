@@ -26,17 +26,15 @@
 #include <stdexcept>
 #include <string>
 
-/** The ConnectionError class is an exception class that inherits from
- * std::exception. It is used to indicate that no connection could be
- * established.
+/** The Error class is the base class for all the exceptions
  */
-class ConnectionError : public std::exception
+class Error : public std::exception
 {
 public:
     /** Constructor
      * \param message an std::string containing the error message
      */
-    ConnectionError(const std::string& message) throw()
+    Error(const std::string& message) throw()
     : std::exception()
     , m_Message(message)
     {
@@ -44,20 +42,52 @@ public:
 
     /** Destructor
      */
-    ~ConnectionError() throw()
+    virtual ~Error() throw()
     {
     }
 
     /** what
      * \return const char pointer containing an error message
      */
-    const char* what() const throw()
+    virtual const char* what() const throw()
     {
         return m_Message.c_str();
     }
 
 private:
     std::string m_Message;
+};
+
+/** The ConnectionError class is an exception class that inherits from
+ * std::exception. It is used to indicate that no connection could be
+ * established.
+ */
+class ConnectionError : public Error
+{
+public:
+    /** Constructor
+     * \param message an std::string containing the error message
+     */
+    ConnectionError(const std::string& message) throw()
+    : Error(message)
+    {
+    }
+};
+
+/** The BaddSessionError class is an exception class that inherits from
+ * std::exception. It is used to indicate that the current session has
+ * become invalid due to another connection on the same account
+ */
+class BadSessionError : public Error
+{
+public:
+    /** Constructor
+     * \param message an std::string containing the error message
+     */
+    BadSessionError(const std::string& message) throw()
+    : Error(message)
+    {
+    }
 };
 
 #endif
