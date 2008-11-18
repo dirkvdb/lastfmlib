@@ -1,8 +1,9 @@
 lastfmlib
 
-Version 0.1.2 (??)
+Version 0.1.2 (18-11-2008)
 - c interface for LastFmScrobbler added
 - Fixed submission of tracks that where not played long enough
+- Reauthenticate if Lastf.fm server returns BADSESSION
 
 Version 0.1.1 (08-09-2008)
 - Use gettimeofday() in stead of clock_gettime()
