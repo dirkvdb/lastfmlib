@@ -1,0 +1,374 @@
+Index: src/config_manager.cc
+===================================================================
+--- src/config_manager.cc	(revision 1877)
++++ src/config_manager.cc	(working copy)
+@@ -1834,7 +1834,41 @@
+     SET_BOOL_OPTION(CFG_ONLINE_CONTENT_WEBORAMA_UPDATE_AT_START);
+ #endif
+ 
++#if defined(HAVE_LASTFMLIB)
++    temp = getOption(_("/lastfm/attribute::enabled"), _(DEFAULT_LASTFM_ENABLED));
+ 
++    if (!validateYesNo(temp))
++        throw _Exception(_("Error in config file: "
++                           "invalid \"enabled\" attribute value in "
++                           "<lastfm> tag"));
++
++    NEW_BOOL_OPTION(temp == "yes" ? true : false);
++    SET_BOOL_OPTION(CFG_LASTFM_ENABLED);
++
++    if (temp == YES)
++    {
++        temp = getOption(_("/lastfm/username"), _(DEFAULT_LASTFM_USERNAME));
++
++        if (temp.length() == 0)
++            throw _Exception(_("Error in config file: lastfm - "
++                               "invalid username value in "
++                               "<username> tag"));
++
++        NEW_OPTION(temp);
++        SET_OPTION(CFG_LASTFM_USERNAME);
++
++        temp = getOption(_("/lastfm/password"), _(DEFAULT_LASTFM_PASSWORD));
++
++        if (temp.length() == 0)
++            throw _Exception(_("Error in config file: lastfm - "
++                               "invalid password value in "
++                               "<password> tag"));
++
++        NEW_OPTION(temp);
++        SET_OPTION(CFG_LASTFM_PASSWORD);
++    }
++#endif
++
+     log_info("Configuration check succeeded.\n");
+ 
+     //root->indent();
+Index: src/server.cc
+===================================================================
+--- src/server.cc	(revision 1877)
++++ src/server.cc	(working copy)
+@@ -41,6 +41,10 @@
+     #include <dvdread/dvd_reader.h>
+ #endif
+ 
++#ifdef HAVE_LASTFMLIB
++    #include "lastfm.h"
++#endif
++
+ #include "server.h"
+ #include "web_callbacks.h"
+ #include "content_manager.h"
+@@ -108,6 +112,10 @@
+ #ifdef HAVE_LIBDVDREAD
+     DVDInit();
+ #endif
++
++#ifdef HAVE_LASTFMLIB
++    LastFm::getInstance()->initialize();
++#endif
+ }
+ 
+ void Server::upnp_init(String iface, String ip_address, int port)
+@@ -338,6 +346,10 @@
+         throw _UpnpException(ret, _("upnp_cleanup: UpnpUnRegisterRootDevice failed"));
+     }
+ 
++#ifdef HAVE_LASTFMLIB
++    LastFm::getInstance()->destroy();
++#endif
++
+ #ifdef HAVE_CURL
+     curl_global_cleanup();
+ #endif
+Index: src/lastfm.h
+===================================================================
+--- src/lastfm.h	(revision 0)
++++ src/lastfm.h	(revision 0)
+@@ -0,0 +1,49 @@
++/// \file lastfm_scrobbler.h
++/// \brief Last.fm scrobbler.
++
++#ifdef HAVE_LASTFMLIB
++
++#ifndef __LASTFM_H__
++#define __LASTFM_H__
++
++#include <cstdlib>
++#include "zmm/zmm.h"
++#include "zmm/ref.h"
++#include "singleton.h"
++#include "cds_objects.h"
++#include <lastfmlib/lastfmscrobbler.h>
++
++class LastFm : public Singleton<LastFm>
++{
++public:
++    LastFm();
++    ~LastFm();
++
++    /// \brief Initializes the LastFm client.
++    ///
++    /// This function reads information from the config and initializes
++    /// various variables (like username and password).
++    void initialize();
++
++    /// \brief Destroys the LastFm client.
++    ///
++    /// This function destroys the LastFm client after submitting the
++    /// last Track info
++    void destroy();
++
++    /// \brief indicates that a new file has started playing.
++    ///
++    /// This function uses notifies Last.fm that the user started listening
++    /// to a file
++    ///
++    /// \param item the audio item that is being played
++    void startedPlaying(zmm::Ref<CdsItem> item);
++
++private:
++    LastFmScrobbler* scrobbler;
++    int currentTrackId;
++};
++
++#endif//__LASTFM_H__
++
++#endif//HAVE_LASTFMLIB
+Index: src/common.h
+===================================================================
+--- src/common.h	(revision 1877)
++++ src/common.h	(working copy)
+@@ -349,6 +349,12 @@
+     #define DEFAULT_FFMPEGTHUMBNAILER_WORKAROUND_BUGS   NO
+ #endif
+ 
++#if defined(HAVE_LASTFMLIB)
++    #define DEFAULT_LASTFM_ENABLED  NO
++    #define DEFAULT_LASTFM_USERNAME ""
++    #define DEFAULT_LASTFM_PASSWORD ""
++#endif
++
+ #define LINK_FILE_REQUEST_HANDLER         "/" SERVER_VIRTUAL_DIR "/" \
+                                           CONTENT_MEDIA_HANDLER  "/"
+ #define LINK_WEB_REQUEST_HANDLER          "/" SERVER_VIRTUAL_DIR "/" \
+Index: src/config_manager.h
+===================================================================
+--- src/config_manager.h	(revision 1877)
++++ src/config_manager.h	(working copy)
+@@ -172,6 +172,11 @@
+     CFG_ONLINE_CONTENT_WEBORAMA_PURGE_AFTER,
+     CFG_ONLINE_CONTENT_WEBORAMA_TASK_LIST,
+ #endif
++#ifdef HAVE_LASTFMLIB
++    CFG_LASTFM_ENABLED,
++    CFG_LASTFM_USERNAME,
++    CFG_LASTFM_PASSWORD,
++#endif
+ 
+     CFG_MAX
+ } config_option_t;
+Index: src/file_request_handler.cc
+===================================================================
+--- src/file_request_handler.cc	(revision 1877)
++++ src/file_request_handler.cc	(working copy)
+@@ -61,6 +61,10 @@
+ #include "transcoding/transcode_dispatcher.h"
+ #endif
+ 
++#ifdef HAVE_LASTFMLIB
++#include "lastfm.h"
++#endif
++
+ using namespace zmm;
+ using namespace mxml;
+ 
+@@ -604,6 +608,13 @@
+                 if (mimeType == nil)
+                     mimeType = item->getMimeType();
+ 
++#ifdef HAVE_LASTFMLIB
++                if (mimeType.startsWith(String("audio")))
++                {
++                    LastFm::getInstance()->startedPlaying(item);
++                }
++#endif
++
+                 info->file_length = statbuf.st_size;
+                 info->content_type = ixmlCloneDOMString(mimeType.c_str());
+ 
+Index: src/lastfm.cc
+===================================================================
+--- src/lastfm.cc	(revision 0)
++++ src/lastfm.cc	(revision 0)
+@@ -0,0 +1,98 @@
++/// \file lastfm.cc
++
++#ifdef HAVE_CONFIG_H
++    #include "autoconfig.h"
++#endif
++
++#ifdef HAVE_LASTFMLIB
++
++#include "lastfm.h"
++#include "config_manager.h"
++#include "metadata_handler.h"
++
++#include <lastfmlib/submissioninfo.h>
++
++using namespace zmm;
++
++
++SINGLETON_MUTEX(LastFm, false);
++
++LastFm::LastFm()
++: Singleton<LastFm>()
++, scrobbler(NULL)
++, currentTrackId(-1)
++{
++}
++
++LastFm::~LastFm()
++{
++    if (currentTrackId != -1 && scrobbler)
++        scrobbler->finishedPlaying();
++}
++
++void LastFm::initialize()
++{
++    Ref<ConfigManager> config = ConfigManager::getInstance();
++
++    if (config->getBoolOption(CFG_LASTFM_ENABLED))
++    {
++        String username = config->getOption(CFG_LASTFM_USERNAME);
++        String password = config->getOption(CFG_LASTFM_PASSWORD);
++        delete scrobbler;
++        scrobbler = new LastFmScrobbler(username.c_str(), password.c_str(), false);
++        scrobbler->setCommitOnlyMode(true);
++    }
++}
++
++void LastFm::destroy()
++{
++    if (scrobbler)
++    {
++        scrobbler->finishedPlaying();
++        delete scrobbler;
++        scrobbler = NULL;
++    }
++}
++
++int timeToSeconds(const char* time)
++{
++    int hours, minutes, seconds;
++    sscanf(time, "%d:%d:%d", &hours, &minutes, &seconds);
++
++    return (hours * 3600) + (minutes * 60) + seconds;
++}
++
++void LastFm::startedPlaying(Ref<CdsItem> item)
++{
++    if (currentTrackId == item->getID() || scrobbler == NULL)
++        return;
++
++    currentTrackId = item->getID();
++
++    log_info("Artist:\t%s\n", item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST)).c_str());
++    log_info("Title:\t%s\n", item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE)).c_str());
++
++    String artist   = item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST));
++    String title    = item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE));
++    String trackNr  = item->getMetadata(MetadataHandler::getMetaFieldName(M_TRACKNUMBER));
++
++    SubmissionInfo info(artist.c_str(), title.c_str());
++
++    String album = item->getMetadata(MetadataHandler::getMetaFieldName(M_ALBUM));
++    if (album != nil)
++        info.setAlbum(album.c_str());
++
++    if (trackNr != nil)
++        info.setTrackNr(atoi(trackNr.c_str()));
++
++    if (item->getResourceCount() > 0)
++    {
++        Ref<CdsResource> resource = item->getResource(0);
++        String duration = resource->getAttribute(MetadataHandler::getResAttrName(R_DURATION));
++        info.setTrackLength(timeToSeconds(duration.c_str()));
++    }
++
++    scrobbler->startedPlaying(info);
++}
++
++#endif//HAVE_LASTFMLIB
+Index: build/libmediatomb_src
+===================================================================
+--- build/libmediatomb_src	(revision 1877)
++++ build/libmediatomb_src	(working copy)
+@@ -59,6 +59,8 @@
+ ../src/layout/js_layout.cc \
+ ../src/layout/js_layout.h \
+ ../src/layout/layout.h \
++../src/lastfm.cc \
++../src/lastfm.h \
+ ../src/logger.cc \
+ ../src/logger.h \
+ ../src/main.cc \
+Index: build/Makefile.am
+===================================================================
+--- build/Makefile.am	(revision 1877)
++++ build/Makefile.am	(working copy)
+@@ -27,7 +27,8 @@
+                      $(CURL_CFLAGS) \
+                      $(EXPAT_CFLAGS) \
+                      $(LIBMP4V2_CFLAGS) \
+-                     $(LIBDVDREAD_CFLAGS)
++                     $(LIBDVDREAD_CFLAGS) \
++                     $(LASTFMLIB_CFLAGS)
+ 
+ bin_PROGRAMS = mediatomb
+ mediatomb_SOURCES = $(top_srcdir)/src/main.cc
+@@ -53,7 +54,8 @@
+                      $(CURL_CFLAGS) \
+                      $(EXPAT_CFLAGS) \
+                      $(LIBMP4V2_CFLAGS) \
+-                     $(LIBDVDREAD_CFLAGS)
++                     $(LIBDVDREAD_CFLAGS)\
++                     $(LASTFMLIB_CFLAGS)
+ 
+ mediatomb_LDADD = \
+     libmediatomb.a \
+@@ -90,5 +92,6 @@
+     $(NSL_LIBS) \
+     $(LWRES_LIBS) \
+     $(LIBDVDREAD_LIBS) \
+-    $(CURL_LIBS)
++    $(CURL_LIBS)\
++    $(LASTFMLIB_LIBS)
+     
+Index: configure.ac
+===================================================================
+--- configure.ac	(revision 1877)
++++ configure.ac	(working copy)
+@@ -1669,6 +1669,14 @@
+    AC_LANG_RESTORE
+ fi
+ 
++
++######## lastfm
++MT_CHECK_OPTIONAL_PACKAGE([lastfmlib], [disable],
++        [compile with lastfmlib support for Last.fm scrobbling],
++        [lastfmlib/lastfmscrobbler],
++        [lastfm], [md5_init])
++
++
+ ########## INOTIFY TOOLS
+ 
+ MT_OPTION([inotify], [disable], [inotify support for imporved autoscan], [], 
+@@ -1860,6 +1868,7 @@
+ echo "SopCast               : $SOPCAST_OPTION_ENABLED"
+ echo "libextractor          : $LIBEXTRACTOR_STATUS"
+ echo "db-autocreate         : $DB_AUTOCREATE_OPTION_ENABLED"
++echo "lastfm                : $LASTFMLIB_STATUS"
+         
+ if test "x$TOMBDEBUG_OPTION_ENABLED" = xyes; then
+     echo "debug log             : $TOMBDEBUG_OPTION_ENABLED"
