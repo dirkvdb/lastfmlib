@@ -1,14 +1,14 @@
 Index: src/config_manager.cc
 ===================================================================
---- src/config_manager.cc	(revision 1877)
+--- src/config_manager.cc	(revision 1987)
 +++ src/config_manager.cc	(working copy)
-@@ -1834,7 +1834,41 @@
+@@ -1966,6 +1966,42 @@
      SET_BOOL_OPTION(CFG_ONLINE_CONTENT_WEBORAMA_UPDATE_AT_START);
  #endif
  
 +#if defined(HAVE_LASTFMLIB)
 +    temp = getOption(_("/lastfm/attribute::enabled"), _(DEFAULT_LASTFM_ENABLED));
- 
++
 +    if (!validateYesNo(temp))
 +        throw _Exception(_("Error in config file: "
 +                           "invalid \"enabled\" attribute value in "
@@ -41,15 +41,16 @@ Index: src/config_manager.cc
 +    }
 +#endif
 +
-     log_info("Configuration check succeeded.\n");
- 
-     //root->indent();
++
+ #ifdef ATRAILERS
+     temp = getOption(_("/import/online-content/AppleTrailers/attribute::enabled"), 
+                      _(DEFAULT_ATRAILERS_ENABLED));
 Index: src/server.cc
 ===================================================================
---- src/server.cc	(revision 1877)
+--- src/server.cc	(revision 1987)
 +++ src/server.cc	(working copy)
-@@ -41,6 +41,10 @@
-     #include <dvdread/dvd_reader.h>
+@@ -37,6 +37,10 @@
+     #include <curl/curl.h>
  #endif
  
 +#ifdef HAVE_LASTFMLIB
@@ -59,9 +60,9 @@ Index: src/server.cc
  #include "server.h"
  #include "web_callbacks.h"
  #include "content_manager.h"
-@@ -108,6 +112,10 @@
- #ifdef HAVE_LIBDVDREAD
-     DVDInit();
+@@ -100,6 +104,10 @@
+ #ifdef HAVE_CURL
+     curl_global_init(CURL_GLOBAL_ALL);
  #endif
 +
 +#ifdef HAVE_LASTFMLIB
@@ -70,17 +71,17 @@ Index: src/server.cc
  }
  
  void Server::upnp_init(String iface, String ip_address, int port)
-@@ -338,6 +346,10 @@
-         throw _UpnpException(ret, _("upnp_cleanup: UpnpUnRegisterRootDevice failed"));
-     }
+@@ -334,6 +342,10 @@
+     curl_global_cleanup();
+ #endif
  
 +#ifdef HAVE_LASTFMLIB
 +    LastFm::getInstance()->destroy();
 +#endif
 +
- #ifdef HAVE_CURL
-     curl_global_cleanup();
- #endif
+     log_debug("now calling upnp finish\n");
+     UpnpFinish();
+     storage = nil;
 Index: src/lastfm.h
 ===================================================================
 --- src/lastfm.h	(revision 0)
@@ -99,7 +100,7 @@ Index: src/lastfm.h
 +#include "zmm/ref.h"
 +#include "singleton.h"
 +#include "cds_objects.h"
-+#include <lastfmlib/lastfmscrobbler.h>
++#include <lastfmlib/lastfmscrobblerc.h>
 +
 +class LastFm : public Singleton<LastFm>
 +{
@@ -128,7 +129,7 @@ Index: src/lastfm.h
 +    void startedPlaying(zmm::Ref<CdsItem> item);
 +
 +private:
-+    LastFmScrobbler* scrobbler;
++    lastfm_scrobbler* scrobbler;
 +    int currentTrackId;
 +};
 +
@@ -137,7 +138,7 @@ Index: src/lastfm.h
 +#endif//HAVE_LASTFMLIB
 Index: src/common.h
 ===================================================================
---- src/common.h	(revision 1877)
+--- src/common.h	(revision 1987)
 +++ src/common.h	(working copy)
 @@ -349,6 +349,12 @@
      #define DEFAULT_FFMPEGTHUMBNAILER_WORKAROUND_BUGS   NO
@@ -149,59 +150,89 @@ Index: src/common.h
 +    #define DEFAULT_LASTFM_PASSWORD ""
 +#endif
 +
- #define LINK_FILE_REQUEST_HANDLER         "/" SERVER_VIRTUAL_DIR "/" \
-                                           CONTENT_MEDIA_HANDLER  "/"
- #define LINK_WEB_REQUEST_HANDLER          "/" SERVER_VIRTUAL_DIR "/" \
+ #define DEFAULT_MARK_PLAYED_ITEMS_ENABLED               NO
+ #define DEFAULT_MARK_PLAYED_ITEMS_SUPPRESS_CDS_UPDATES   YES
+ #define DEFAULT_MARK_PLAYED_ITEMS_STRING_MODE           "prepend"
 Index: src/config_manager.h
 ===================================================================
---- src/config_manager.h	(revision 1877)
+--- src/config_manager.h	(revision 1987)
 +++ src/config_manager.h	(working copy)
-@@ -172,6 +172,11 @@
-     CFG_ONLINE_CONTENT_WEBORAMA_PURGE_AFTER,
-     CFG_ONLINE_CONTENT_WEBORAMA_TASK_LIST,
+@@ -185,6 +185,12 @@
+     CFG_ONLINE_CONTENT_ATRAILERS_PURGE_AFTER,
+     CFG_ONLINE_CONTENT_ATRAILERS_RESOLUTION,
  #endif
 +#ifdef HAVE_LASTFMLIB
 +    CFG_LASTFM_ENABLED,
 +    CFG_LASTFM_USERNAME,
 +    CFG_LASTFM_PASSWORD,
 +#endif
- 
++
      CFG_MAX
  } config_option_t;
+ 
 Index: src/file_request_handler.cc
 ===================================================================
---- src/file_request_handler.cc	(revision 1877)
+--- src/file_request_handler.cc	(revision 1987)
 +++ src/file_request_handler.cc	(working copy)
-@@ -61,6 +61,10 @@
- #include "transcoding/transcode_dispatcher.h"
+@@ -62,6 +62,10 @@
+     #include "transcoding/transcode_dispatcher.h"
  #endif
  
 +#ifdef HAVE_LASTFMLIB
-+#include "lastfm.h"
++    #include "lastfm.h"
 +#endif
 +
  using namespace zmm;
  using namespace mxml;
  
-@@ -604,6 +608,13 @@
-                 if (mimeType == nil)
-                     mimeType = item->getMimeType();
+@@ -621,6 +625,13 @@
+             if (mimeType == nil)
+                 mimeType = item->getMimeType();
  
 +#ifdef HAVE_LASTFMLIB
-+                if (mimeType.startsWith(String("audio")))
-+                {
-+                    LastFm::getInstance()->startedPlaying(item);
-+                }
++            if (mimeType.startsWith(String("audio")))
++            {
++                LastFm::getInstance()->startedPlaying(item);
++            }
 +#endif
 +
-                 info->file_length = statbuf.st_size;
-                 info->content_type = ixmlCloneDOMString(mimeType.c_str());
+             info->file_length = statbuf.st_size;
+             info->content_type = ixmlCloneDOMString(mimeType.c_str());
  
 Index: src/lastfm.cc
 ===================================================================
 --- src/lastfm.cc	(revision 0)
 +++ src/lastfm.cc	(revision 0)
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,121 @@
++/*MT*
++
++    MediaTomb - http://www.mediatomb.cc/
++
++    lastfm_scrobbler.cc - this file is part of MediaTomb.
++
++    Copyright (C) 2005 Gena Batyan <bgeradz@mediatomb.cc>,
++                       Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++
++    Copyright (C) 2006-2008 Gena Batyan <bgeradz@mediatomb.cc>,
++                            Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>,
++                            Leonhard Wimmer <leo@mediatomb.cc>
++
++    MediaTomb is free software; you can redistribute it and/or modify
++    it under the terms of the GNU General Public License version 2
++    as published by the Free Software Foundation.
++
++    MediaTomb is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    version 2 along with MediaTomb; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++
++    $Id: lastfm.cc 1775 2008-04-09 10:32:57Z jin_eld $
++*/
++
 +/// \file lastfm.cc
 +
 +#ifdef HAVE_CONFIG_H
@@ -213,8 +244,6 @@ Index: src/lastfm.cc
 +#include "lastfm.h"
 +#include "config_manager.h"
 +#include "metadata_handler.h"
-+
-+#include <lastfmlib/submissioninfo.h>
 +
 +using namespace zmm;
 +
@@ -231,31 +260,25 @@ Index: src/lastfm.cc
 +LastFm::~LastFm()
 +{
 +    if (currentTrackId != -1 && scrobbler)
-+        scrobbler->finishedPlaying();
++        finished_playing(scrobbler);
 +}
 +
 +void LastFm::initialize()
 +{
 +    Ref<ConfigManager> config = ConfigManager::getInstance();
 +
-+    if (config->getBoolOption(CFG_LASTFM_ENABLED))
-+    {
-+        String username = config->getOption(CFG_LASTFM_USERNAME);
-+        String password = config->getOption(CFG_LASTFM_PASSWORD);
-+        delete scrobbler;
-+        scrobbler = new LastFmScrobbler(username.c_str(), password.c_str(), false);
-+        scrobbler->setCommitOnlyMode(true);
-+    }
++    String username = config->getOption(CFG_LASTFM_USERNAME);
++    String password = config->getOption(CFG_LASTFM_PASSWORD);
++
++    scrobbler = create_scrobbler(username.c_str(), password.c_str(), false);
++    set_commit_only_mode(scrobbler, 1);
 +}
 +
 +void LastFm::destroy()
 +{
-+    if (scrobbler)
-+    {
-+        scrobbler->finishedPlaying();
-+        delete scrobbler;
-+        scrobbler = NULL;
-+    }
++    finished_playing(scrobbler);
++    destroy_scrobbler(scrobbler);
++    scrobbler = NULL;
 +}
 +
 +int timeToSeconds(const char* time)
@@ -280,31 +303,33 @@ Index: src/lastfm.cc
 +    String title    = item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE));
 +    String trackNr  = item->getMetadata(MetadataHandler::getMetaFieldName(M_TRACKNUMBER));
 +
-+    SubmissionInfo info(artist.c_str(), title.c_str());
++    submission_info* info = create_submission_info();
++    info->artist = item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST)).c_str();
++    info->track = item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE)).c_str();
 +
 +    String album = item->getMetadata(MetadataHandler::getMetaFieldName(M_ALBUM));
 +    if (album != nil)
-+        info.setAlbum(album.c_str());
++        info->album = album.c_str();
 +
 +    if (trackNr != nil)
-+        info.setTrackNr(atoi(trackNr.c_str()));
++        info->track_nr = atoi(trackNr.c_str());
 +
 +    if (item->getResourceCount() > 0)
 +    {
 +        Ref<CdsResource> resource = item->getResource(0);
 +        String duration = resource->getAttribute(MetadataHandler::getResAttrName(R_DURATION));
-+        info.setTrackLength(timeToSeconds(duration.c_str()));
++        info->track_length_in_secs = timeToSeconds(duration.c_str());
 +    }
 +
-+    scrobbler->startedPlaying(info);
++    started_playing(scrobbler, info);
 +}
 +
 +#endif//HAVE_LASTFMLIB
 Index: build/libmediatomb_src
 ===================================================================
---- build/libmediatomb_src	(revision 1877)
+--- build/libmediatomb_src	(revision 1987)
 +++ build/libmediatomb_src	(working copy)
-@@ -59,6 +59,8 @@
+@@ -63,6 +63,8 @@
  ../src/layout/js_layout.cc \
  ../src/layout/js_layout.h \
  ../src/layout/layout.h \
@@ -315,60 +340,60 @@ Index: build/libmediatomb_src
  ../src/main.cc \
 Index: build/Makefile.am
 ===================================================================
---- build/Makefile.am	(revision 1877)
+--- build/Makefile.am	(revision 1987)
 +++ build/Makefile.am	(working copy)
 @@ -27,7 +27,8 @@
                       $(CURL_CFLAGS) \
                       $(EXPAT_CFLAGS) \
                       $(LIBMP4V2_CFLAGS) \
--                     $(LIBDVDREAD_CFLAGS)
+-                     $(LIBDVDNAV_CFLAGS)
 +                     $(LIBDVDREAD_CFLAGS) \
 +                     $(LASTFMLIB_CFLAGS)
  
  bin_PROGRAMS = mediatomb
  mediatomb_SOURCES = $(top_srcdir)/src/main.cc
-@@ -53,7 +54,8 @@
+@@ -53,7 +54,9 @@
                       $(CURL_CFLAGS) \
                       $(EXPAT_CFLAGS) \
                       $(LIBMP4V2_CFLAGS) \
--                     $(LIBDVDREAD_CFLAGS)
-+                     $(LIBDVDREAD_CFLAGS)\
-+                     $(LASTFMLIB_CFLAGS)
+-                     $(LIBDVDNAV_CFLAGS)
++                     $(LIBDVDREAD_CFLAGS) \
++                     $(LIBDVDNAV_CFLAGS) \
++					 $(LASTFMLIB_CFLAGS)
  
  mediatomb_LDADD = \
      libmediatomb.a \
-@@ -90,5 +92,6 @@
+@@ -90,5 +93,6 @@
      $(NSL_LIBS) \
      $(LWRES_LIBS) \
-     $(LIBDVDREAD_LIBS) \
+     $(LIBDVDNAV_LIBS) \
 -    $(CURL_LIBS)
+-    
 +    $(CURL_LIBS)\
 +    $(LASTFMLIB_LIBS)
-     
++
 Index: configure.ac
 ===================================================================
---- configure.ac	(revision 1877)
+--- configure.ac	(revision 1987)
 +++ configure.ac	(working copy)
-@@ -1669,6 +1669,14 @@
-    AC_LANG_RESTORE
- fi
+@@ -1569,6 +1569,12 @@
+ LDFLAGS="$LDFLAGS_SAVE"
+ CPPFLAGS="$CPPFLAGS_SAVE"
  
-+
 +######## lastfm
 +MT_CHECK_OPTIONAL_PACKAGE([lastfmlib], [disable],
 +        [compile with lastfmlib support for Last.fm scrobbling],
 +        [lastfmlib/lastfmscrobbler],
 +        [lastfm], [md5_init])
 +
-+
- ########## INOTIFY TOOLS
+ ######## extractor
  
- MT_OPTION([inotify], [disable], [inotify support for imporved autoscan], [], 
-@@ -1860,6 +1868,7 @@
- echo "SopCast               : $SOPCAST_OPTION_ENABLED"
- echo "libextractor          : $LIBEXTRACTOR_STATUS"
- echo "db-autocreate         : $DB_AUTOCREATE_OPTION_ENABLED"
+ if test "x$LIBEXTRACTOR_OPTION_ENABLED" = xyes; then
+@@ -1899,6 +1905,7 @@
+ echo "libdvdnav             : $LIBDVDNAV_STATUS"
+ echo "ffmpeg                : $FFMPEG_STATUS"
+ echo "ffmpegthumbnailer     : $FFMPEGTHUMBNAILER_STATUS"
 +echo "lastfm                : $LASTFMLIB_STATUS"
-         
- if test "x$TOMBDEBUG_OPTION_ENABLED" = xyes; then
-     echo "debug log             : $TOMBDEBUG_OPTION_ENABLED"
+ echo "external transcoding  : $EXTERNAL_TRANSCODING_OPTION_ENABLED"
+ echo "curl                  : $CURL_OK"
+ echo "YouTube               : $YOUTUBE_OPTION_ENABLED"
