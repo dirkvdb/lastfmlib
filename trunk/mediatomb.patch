@@ -203,7 +203,7 @@ Index: src/lastfm.cc
 ===================================================================
 --- src/lastfm.cc	(revision 0)
 +++ src/lastfm.cc	(revision 0)
-@@ -0,0 +1,121 @@
+@@ -0,0 +1,123 @@
 +/*MT*
 +
 +    MediaTomb - http://www.mediatomb.cc/
@@ -322,6 +322,8 @@ Index: src/lastfm.cc
 +    }
 +
 +    started_playing(scrobbler, info);
++    
++    destroy_submission_info(info);
 +}
 +
 +#endif//HAVE_LASTFMLIB
