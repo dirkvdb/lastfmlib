@@ -48,6 +48,7 @@ extern "C" submission_info* create_submission_info()
     info->track_length_in_secs     = 0;
     info->track_nr                 = -1;
     info->music_brainz_id          = NULL;
+    info->time_started             = -1;
 
     info->track_source             = UserChosen;
     info->track_rating             = None;
