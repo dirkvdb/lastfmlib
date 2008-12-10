@@ -1,5 +1,9 @@
 lastfmlib
 
+Version 0.1.2 (10-12-2008)
+- Fixed logging not being enabled with --enable-logging
+- Fixed C interface not scrobbling tracks when time_started was not explicitely set
+
 Version 0.1.2 (18-11-2008)
 - c interface for LastFmScrobbler added
 - Fixed submission of tracks that where not played long enough
