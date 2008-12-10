@@ -39,6 +39,7 @@ if test "$ENABLE_LOGGING" = "yes"; then
     PKG_CHECK_MODULES(LOG4CPP, log4cpp, HAVE_LOG4CPP=yes, AC_MSG_ERROR([ +Could not find log4cpp]))
     AC_SUBST(LOG4CPP_LIBS)
     AC_SUBST(LOG4CPP_CFLAGS)
+    AC_DEFINE(ENABLE_LOGGING)
 fi
 AM_CONDITIONAL(ENABLE_LOGGING, test "$enable_logging" = "yes")
 
