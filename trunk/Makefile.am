@@ -48,7 +48,7 @@ nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
 
 liblastfm_la_CXXFLAGS       =   $(LOG4CPP_CFLAGS)
 liblastfm_la_LDFLAGS        =   -version-info 1:0:0
-liblastfm_la_LIBADD         =   $(CURL_LIBS) $(LOG4CPP_LIBS)
+liblastfm_la_LIBADD         =   $(CURL_LIBS) $(LOG4CPP_LIBS) -lpthread
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -71,4 +71,4 @@ testrunner_SOURCES =    lastfmlib/unittest/testrunner.cpp \
 
 
 testrunner_LDFLAGS  =   liblastfm.la
-testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) $(LOG4CPP_LIBS)
+testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) $(LOG4CPP_LIBS) -lpthread
