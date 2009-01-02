@@ -1,5 +1,9 @@
 lastfmlib
 
+Version 0.1.4 (02-01-2009)
+- Fixed logging not being enabled with --enable-logging
+- Fixed C interface not scrobbling tracks when time_started was not explicitely set
+
 Version 0.1.3 (10-12-2008)
 - Fixed logging not being enabled with --enable-logging
 - Fixed C interface not scrobbling tracks when time_started was not explicitely set

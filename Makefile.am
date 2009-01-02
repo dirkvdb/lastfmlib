@@ -47,7 +47,7 @@ nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
                                 lastfmlib/utils/log.h
 
 liblastfm_la_CXXFLAGS       =   $(LOG4CPP_CFLAGS)
-liblastfm_la_LDFLAGS        =   -version-info 1:0:0
+liblastfm_la_LDFLAGS        =   -version-info 1:0:1
 liblastfm_la_LIBADD         =   $(CURL_LIBS) $(LOG4CPP_LIBS) -lpthread
 
 ACLOCAL_AMFLAGS = -I m4
