@@ -1,8 +1,23 @@
 Index: src/config_manager.cc
 ===================================================================
---- src/config_manager.cc	(revision 1987)
+--- src/config_manager.cc	(revision 2018)
 +++ src/config_manager.cc	(working copy)
-@@ -1966,6 +1966,42 @@
+@@ -628,6 +628,14 @@
+ #ifdef EXTERNAL_TRANSCODING
+     config->appendElementChild(renderTranscodingSection());
+ #endif
++
++#ifdef HAVE_LASTFMLIB
++    Ref<Element> lastfm(new Element(_("lastfm")));
++    lastfm->setAttribute(_("enabled"), _(DEFAULT_LASTFM_ENABLED));
++    lastfm->appendTextChild(_("username"), _(DEFAULT_LASTFM_USERNAME));
++    lastfm->appendTextChild(_("password"), _(DEFAULT_LASTFM_PASSWORD));
++    config->appendElementChild(lastfm);
++#endif
+     
+     config->indent();
+     save_text(config_filename, config->print());
+@@ -1999,6 +2007,42 @@
      SET_BOOL_OPTION(CFG_ONLINE_CONTENT_WEBORAMA_UPDATE_AT_START);
  #endif
  
@@ -47,7 +62,7 @@ Index: src/config_manager.cc
                       _(DEFAULT_ATRAILERS_ENABLED));
 Index: src/server.cc
 ===================================================================
---- src/server.cc	(revision 1987)
+--- src/server.cc	(revision 2018)
 +++ src/server.cc	(working copy)
 @@ -37,6 +37,10 @@
      #include <curl/curl.h>
@@ -82,72 +97,18 @@ Index: src/server.cc
      log_debug("now calling upnp finish\n");
      UpnpFinish();
      storage = nil;
-Index: src/lastfm.h
-===================================================================
---- src/lastfm.h	(revision 0)
-+++ src/lastfm.h	(revision 0)
-@@ -0,0 +1,49 @@
-+/// \file lastfm_scrobbler.h
-+/// \brief Last.fm scrobbler.
-+
-+#ifdef HAVE_LASTFMLIB
-+
-+#ifndef __LASTFM_H__
-+#define __LASTFM_H__
-+
-+#include <cstdlib>
-+#include "zmm/zmm.h"
-+#include "zmm/ref.h"
-+#include "singleton.h"
-+#include "cds_objects.h"
-+#include <lastfmlib/lastfmscrobblerc.h>
-+
-+class LastFm : public Singleton<LastFm>
-+{
-+public:
-+    LastFm();
-+    ~LastFm();
-+
-+    /// \brief Initializes the LastFm client.
-+    ///
-+    /// This function reads information from the config and initializes
-+    /// various variables (like username and password).
-+    void initialize();
-+
-+    /// \brief Destroys the LastFm client.
-+    ///
-+    /// This function destroys the LastFm client after submitting the
-+    /// last Track info
-+    void destroy();
-+
-+    /// \brief indicates that a new file has started playing.
-+    ///
-+    /// This function uses notifies Last.fm that the user started listening
-+    /// to a file
-+    ///
-+    /// \param item the audio item that is being played
-+    void startedPlaying(zmm::Ref<CdsItem> item);
-+
-+private:
-+    lastfm_scrobbler* scrobbler;
-+    int currentTrackId;
-+};
-+
-+#endif//__LASTFM_H__
-+
-+#endif//HAVE_LASTFMLIB
 Index: src/common.h
 ===================================================================
---- src/common.h	(revision 1987)
+--- src/common.h	(revision 2018)
 +++ src/common.h	(working copy)
-@@ -349,6 +349,12 @@
+@@ -352,6 +352,12 @@
      #define DEFAULT_FFMPEGTHUMBNAILER_WORKAROUND_BUGS   NO
  #endif
  
 +#if defined(HAVE_LASTFMLIB)
 +    #define DEFAULT_LASTFM_ENABLED  NO
-+    #define DEFAULT_LASTFM_USERNAME ""
-+    #define DEFAULT_LASTFM_PASSWORD ""
++    #define DEFAULT_LASTFM_USERNAME "lastfmuser"
++    #define DEFAULT_LASTFM_PASSWORD "lastfmpass"
 +#endif
 +
  #define DEFAULT_MARK_PLAYED_ITEMS_ENABLED               NO
@@ -155,9 +116,9 @@ Index: src/common.h
  #define DEFAULT_MARK_PLAYED_ITEMS_STRING_MODE           "prepend"
 Index: src/config_manager.h
 ===================================================================
---- src/config_manager.h	(revision 1987)
+--- src/config_manager.h	(revision 2018)
 +++ src/config_manager.h	(working copy)
-@@ -185,6 +185,12 @@
+@@ -187,6 +187,12 @@
      CFG_ONLINE_CONTENT_ATRAILERS_PURGE_AFTER,
      CFG_ONLINE_CONTENT_ATRAILERS_RESOLUTION,
  #endif
@@ -172,9 +133,9 @@ Index: src/config_manager.h
  
 Index: src/file_request_handler.cc
 ===================================================================
---- src/file_request_handler.cc	(revision 1987)
+--- src/file_request_handler.cc	(revision 2018)
 +++ src/file_request_handler.cc	(working copy)
-@@ -62,6 +62,10 @@
+@@ -66,6 +66,10 @@
      #include "transcoding/transcode_dispatcher.h"
  #endif
  
@@ -185,153 +146,28 @@ Index: src/file_request_handler.cc
  using namespace zmm;
  using namespace mxml;
  
-@@ -621,6 +625,13 @@
-             if (mimeType == nil)
-                 mimeType = item->getMimeType();
+@@ -452,8 +456,15 @@
+     }
  
-+#ifdef HAVE_LASTFMLIB
-+            if (mimeType.startsWith(String("audio")))
-+            {
-+                LastFm::getInstance()->startedPlaying(item);
-+            }
-+#endif
-+
-             info->file_length = statbuf.st_size;
-             info->content_type = ixmlCloneDOMString(mimeType.c_str());
- 
-Index: src/lastfm.cc
-===================================================================
---- src/lastfm.cc	(revision 0)
-+++ src/lastfm.cc	(revision 0)
-@@ -0,0 +1,123 @@
-+/*MT*
-+
-+    MediaTomb - http://www.mediatomb.cc/
-+
-+    lastfm_scrobbler.cc - this file is part of MediaTomb.
-+
-+    Copyright (C) 2005 Gena Batyan <bgeradz@mediatomb.cc>,
-+                       Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
-+
-+    Copyright (C) 2006-2008 Gena Batyan <bgeradz@mediatomb.cc>,
-+                            Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>,
-+                            Leonhard Wimmer <leo@mediatomb.cc>
-+
-+    MediaTomb is free software; you can redistribute it and/or modify
-+    it under the terms of the GNU General Public License version 2
-+    as published by the Free Software Foundation.
-+
-+    MediaTomb is distributed in the hope that it will be useful,
-+    but WITHOUT ANY WARRANTY; without even the implied warranty of
-+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+    GNU General Public License for more details.
-+
-+    You should have received a copy of the GNU General Public License
-+    version 2 along with MediaTomb; if not, write to the Free Software
-+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
-+
-+    $Id: lastfm.cc 1775 2008-04-09 10:32:57Z jin_eld $
-+*/
-+
-+/// \file lastfm.cc
-+
-+#ifdef HAVE_CONFIG_H
-+    #include "autoconfig.h"
-+#endif
-+
-+#ifdef HAVE_LASTFMLIB
-+
-+#include "lastfm.h"
-+#include "config_manager.h"
-+#include "metadata_handler.h"
-+
-+using namespace zmm;
-+
-+
-+SINGLETON_MUTEX(LastFm, false);
-+
-+LastFm::LastFm()
-+: Singleton<LastFm>()
-+, scrobbler(NULL)
-+, currentTrackId(-1)
-+{
-+}
-+
-+LastFm::~LastFm()
-+{
-+    if (currentTrackId != -1 && scrobbler)
-+        finished_playing(scrobbler);
-+}
-+
-+void LastFm::initialize()
-+{
-+    Ref<ConfigManager> config = ConfigManager::getInstance();
-+
-+    String username = config->getOption(CFG_LASTFM_USERNAME);
-+    String password = config->getOption(CFG_LASTFM_PASSWORD);
-+
-+    scrobbler = create_scrobbler(username.c_str(), password.c_str(), false);
-+    set_commit_only_mode(scrobbler, 1);
-+}
-+
-+void LastFm::destroy()
-+{
-+    finished_playing(scrobbler);
-+    destroy_scrobbler(scrobbler);
-+    scrobbler = NULL;
-+}
-+
-+int timeToSeconds(const char* time)
-+{
-+    int hours, minutes, seconds;
-+    sscanf(time, "%d:%d:%d", &hours, &minutes, &seconds);
-+
-+    return (hours * 3600) + (minutes * 60) + seconds;
-+}
-+
-+void LastFm::startedPlaying(Ref<CdsItem> item)
-+{
-+    if (currentTrackId == item->getID() || scrobbler == NULL)
-+        return;
-+
-+    currentTrackId = item->getID();
-+
-+    log_info("Artist:\t%s\n", item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST)).c_str());
-+    log_info("Title:\t%s\n", item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE)).c_str());
-+
-+    String artist   = item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST));
-+    String title    = item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE));
-+    String trackNr  = item->getMetadata(MetadataHandler::getMetaFieldName(M_TRACKNUMBER));
-+
-+    submission_info* info = create_submission_info();
-+    info->artist = item->getMetadata(MetadataHandler::getMetaFieldName(M_ARTIST)).c_str();
-+    info->track = item->getMetadata(MetadataHandler::getMetaFieldName(M_TITLE)).c_str();
-+
-+    String album = item->getMetadata(MetadataHandler::getMetaFieldName(M_ALBUM));
-+    if (album != nil)
-+        info->album = album.c_str();
-+
-+    if (trackNr != nil)
-+        info->track_nr = atoi(trackNr.c_str());
-+
-+    if (item->getResourceCount() > 0)
-+    {
-+        Ref<CdsResource> resource = item->getResource(0);
-+        String duration = resource->getAttribute(MetadataHandler::getResAttrName(R_DURATION));
-+        info->track_length_in_secs = timeToSeconds(duration.c_str());
-+    }
-+
-+    started_playing(scrobbler, info);
+     Ref<CdsItem> item = RefCast(obj, CdsItem);
+-
 +    
-+    destroy_submission_info(info);
-+}
-+
-+#endif//HAVE_LASTFMLIB
+     String path = item->getLocation();
++    
++#ifdef HAVE_LASTFMLIB
++    if (item->getMimeType().startsWith(String("audio")))
++    {
++        LastFm::getInstance()->startedPlaying(item);
++    }
++#endif
+ 
+     String ext = dict->get(_("ext"));
+     int edot = ext.rindex('.');
 Index: build/libmediatomb_src
 ===================================================================
---- build/libmediatomb_src	(revision 1987)
+--- build/libmediatomb_src	(revision 2018)
 +++ build/libmediatomb_src	(working copy)
-@@ -63,6 +63,8 @@
+@@ -67,6 +67,8 @@
  ../src/layout/js_layout.cc \
  ../src/layout/js_layout.h \
  ../src/layout/layout.h \
@@ -342,7 +178,7 @@ Index: build/libmediatomb_src
  ../src/main.cc \
 Index: build/Makefile.am
 ===================================================================
---- build/Makefile.am	(revision 1987)
+--- build/Makefile.am	(revision 2018)
 +++ build/Makefile.am	(working copy)
 @@ -27,7 +27,8 @@
                       $(CURL_CFLAGS) \
@@ -376,7 +212,7 @@ Index: build/Makefile.am
 +
 Index: configure.ac
 ===================================================================
---- configure.ac	(revision 1987)
+--- configure.ac	(revision 2018)
 +++ configure.ac	(working copy)
 @@ -1569,6 +1569,12 @@
  LDFLAGS="$LDFLAGS_SAVE"
@@ -386,7 +222,7 @@ Index: configure.ac
 +MT_CHECK_OPTIONAL_PACKAGE([lastfmlib], [disable],
 +        [compile with lastfmlib support for Last.fm scrobbling],
 +        [lastfmlib/lastfmscrobbler],
-+        [lastfm], [md5_init])
++        [lastfm], [create_scrobbler])
 +
  ######## extractor
  
