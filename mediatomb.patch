@@ -352,7 +352,7 @@ Index: src/lastfm.cc
 +        info->track_length_in_secs = timeToSeconds(duration.c_str());
 +    }
 +
-+    //started_playing(scrobbler, info);
++    started_playing(scrobbler, info);
 +    
 +    destroy_submission_info(info);
 +}
