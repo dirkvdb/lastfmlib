@@ -32,10 +32,13 @@
       <li><a href="#index_b"><span>b</span></a></li>
       <li><a href="#index_c"><span>c</span></a></li>
       <li><a href="#index_e"><span>e</span></a></li>
+      <li><a href="#index_f"><span>f</span></a></li>
       <li><a href="#index_g"><span>g</span></a></li>
       <li><a href="#index_h"><span>h</span></a></li>
+      <li><a href="#index_l"><span>l</span></a></li>
       <li><a href="#index_m"><span>m</span></a></li>
       <li><a href="#index_n"><span>n</span></a></li>
+      <li><a href="#index_p"><span>p</span></a></li>
       <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_w"><span>w</span></a></li>
       <li><a href="#index_~"><span>~</span></a></li>
@@ -58,6 +61,10 @@ Here is a list of all documented class members with links to the class documenta
 <h3><a class="anchor" name="index_e">- e -</a></h3><ul>
 <li>Error()
 : <a class="el" href="classError.html#ccd611f3ddae0828adeb6ca251113ffd">Error</a>
+</ul>
+<h3><a class="anchor" name="index_f">- f -</a></h3><ul>
+<li>finishedPlaying()
+: <a class="el" href="classLastFmScrobbler.html#894d6fe819c18a81b2898a0ebaddabef">LastFmScrobbler</a>
 </ul>
 <h3><a class="anchor" name="index_g">- g -</a></h3><ul>
 <li>getAlbum()
@@ -82,19 +89,35 @@ Here is a list of all documented class members with links to the class documenta
 <li>handshake()
 : <a class="el" href="classLastFmClient.html#15a48b0db2319da2088e320a87aa4181">LastFmClient</a>
 </ul>
+<h3><a class="anchor" name="index_l">- l -</a></h3><ul>
+<li>LastFmScrobbler()
+: <a class="el" href="classLastFmScrobbler.html#7f594926a2649edf5ddf5eb7af73caa8">LastFmScrobbler</a>
+</ul>
 <h3><a class="anchor" name="index_m">- m -</a></h3><ul>
 <li>m_Album
 : <a class="el" href="classNowPlayingInfo.html#a414d39cf58bdd9d0f69c590a5af7207">NowPlayingInfo</a>
 <li>m_Artist
 : <a class="el" href="classNowPlayingInfo.html#a0b95cd6b80e36d6ee5ba2861f58c55d">NowPlayingInfo</a>
+<li>m_AuthenticateThread
+: <a class="el" href="classLastFmScrobbler.html#f0e2ee34f15eb3868c3d546a3dd7a77b">LastFmScrobbler</a>
+<li>m_FinishPlayingThread
+: <a class="el" href="classLastFmScrobbler.html#2bb9f712fec18ca99caa1bf337031287">LastFmScrobbler</a>
+<li>m_LastConnectionAttempt
+: <a class="el" href="classLastFmScrobbler.html#557ac719af5ee050597d1c55f3fc3e28">LastFmScrobbler</a>
 <li>m_MusicBrainzId
 : <a class="el" href="classNowPlayingInfo.html#768a0ec4cca3e39cbdc81033f7843f11">NowPlayingInfo</a>
+<li>m_SendInfoThread
+: <a class="el" href="classLastFmScrobbler.html#4037c1d1271ba1f0f01016671f4b4232">LastFmScrobbler</a>
 <li>m_Track
 : <a class="el" href="classNowPlayingInfo.html#368ea19abf8b5fbf0419316ee3247485">NowPlayingInfo</a>
 <li>m_TrackLengthInSecs
 : <a class="el" href="classNowPlayingInfo.html#31f0e8f075359fc4da3662c5f606f487">NowPlayingInfo</a>
 <li>m_TrackNr
 : <a class="el" href="classNowPlayingInfo.html#01c2ab80378621c6af8a17d0c9eac097">NowPlayingInfo</a>
+<li>m_TrackPlayTime
+: <a class="el" href="classLastFmScrobbler.html#c8af644cbf13cfb295d24c44081ea846">LastFmScrobbler</a>
+<li>m_TrackResumeTime
+: <a class="el" href="classLastFmScrobbler.html#e9fc88b7e67638197d509decaa0bdc99">LastFmScrobbler</a>
 </ul>
 <h3><a class="anchor" name="index_n">- n -</a></h3><ul>
 <li>nowPlaying()
@@ -102,11 +125,17 @@ Here is a list of all documented class members with links to the class documenta
 <li>NowPlayingInfo()
 : <a class="el" href="classNowPlayingInfo.html#c8c8201eeba8885471841fd8fed310c7">NowPlayingInfo</a>
 </ul>
+<h3><a class="anchor" name="index_p">- p -</a></h3><ul>
+<li>pausePlaying()
+: <a class="el" href="classLastFmScrobbler.html#bfbc714418880e39139d1e2f11a897eb">LastFmScrobbler</a>
+</ul>
 <h3><a class="anchor" name="index_s">- s -</a></h3><ul>
 <li>setAlbum()
 : <a class="el" href="classNowPlayingInfo.html#d6a3636da5ca557e777d723780ca1a3d">NowPlayingInfo</a>
 <li>setArtist()
 : <a class="el" href="classNowPlayingInfo.html#863e2386bb5ab6c0bb1bf3092e84ea8c">NowPlayingInfo</a>
+<li>setCommitOnlyMode()
+: <a class="el" href="classLastFmScrobbler.html#e5951987f92bd4b94119a3ad374c39de">LastFmScrobbler</a>
 <li>setMusicBrainzId()
 : <a class="el" href="classNowPlayingInfo.html#6d710e08ff7d84efeee3204389cc98b9">NowPlayingInfo</a>
 <li>setRating()
@@ -116,13 +145,15 @@ Here is a list of all documented class members with links to the class documenta
 <li>setTimeStarted()
 : <a class="el" href="classSubmissionInfo.html#f7fc384141fdf5970e90b7aba041b740">SubmissionInfo</a>
 <li>setTrack()
-: <a class="el" href="classNowPlayingInfo.html#2cd83e373659e98e599caf9ce71f5681">NowPlayingInfo</a>
+: <a class="el" href="classNowPlayingInfo.html#69961ba6253938017ddb4e62581784dd">NowPlayingInfo</a>
 <li>setTrackLength()
 : <a class="el" href="classNowPlayingInfo.html#9dec8a6194b9b05520bdb65c0381e20f">NowPlayingInfo</a>
 <li>setTrackNr()
 : <a class="el" href="classNowPlayingInfo.html#03a95275b94c3b5cd757c1e5b8436214">NowPlayingInfo</a>
+<li>startedPlaying()
+: <a class="el" href="classLastFmScrobbler.html#ba6709a8df89a4f69881acd03f4ad696">LastFmScrobbler</a>
 <li>SubmissionInfo()
-: <a class="el" href="classSubmissionInfo.html#7160c394e65102eff32a11a3d6eac112">SubmissionInfo</a>
+: <a class="el" href="classSubmissionInfo.html#c78efe4ae2a7f71f43d072590ed429af">SubmissionInfo</a>
 <li>submit()
 : <a class="el" href="classLastFmClient.html#2070806e00654b6ced2618750f740975">LastFmClient</a>
 </ul>
@@ -133,9 +164,11 @@ Here is a list of all documented class members with links to the class documenta
 <h3><a class="anchor" name="index_~">- ~ -</a></h3><ul>
 <li>~Error()
 : <a class="el" href="classError.html#add4b7cb712e1322ec3da4a4d9af6460">Error</a>
+<li>~LastFmScrobbler()
+: <a class="el" href="classLastFmScrobbler.html#9ff0a8d8ebf0fa4487a8a5c253370e41">LastFmScrobbler</a>
 </ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Wed Mar 11 12:56:39 2009 for lastfmlib by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Wed Mar 11 13:01:37 2009 for lastfmlib by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.5 </small></address>
 </body>
