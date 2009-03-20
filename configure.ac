@@ -28,17 +28,18 @@ AC_ARG_ENABLE(debug,
 AM_CONDITIONAL(DEBUG, test "$enable_debug" = "yes")
 
 if test "$DEBUG" = "yes"; then
-    CXXFLAGS="$CXXFLAGS -g -Wall -Werror -Wfatal-errors"
+    CXXFLAGS="-g -O1 -Wall -Werror -Wfatal-errors"
 fi
+
+CFLAGS="$CFLAGS -D_REENTRANT"
+CXXFLAGS="$CXXFLAGS -D_REENTRANT"
 
 AC_ARG_ENABLE(logging,
    [  --enable-logging Enables logging of debug messages to file ],
    ENABLE_LOGGING=$enableval)
 
 if test "$ENABLE_LOGGING" = "yes"; then
-    PKG_CHECK_MODULES(LOG4CPP, log4cpp, HAVE_LOG4CPP=yes, AC_MSG_ERROR([ +Could not find log4cpp]))
-    AC_SUBST(LOG4CPP_LIBS)
-    AC_SUBST(LOG4CPP_CFLAGS)
+    AC_CHECK_HEADER(syslog.h)
     AC_DEFINE(ENABLE_LOGGING)
 fi
 AM_CONDITIONAL(ENABLE_LOGGING, test "$enable_logging" = "yes")

@@ -17,44 +17,46 @@
 #include "log.h"
 
 #ifdef ENABLE_LOGGING
-    #include <log4cpp/BasicLayout.hh>
+    #include <syslog.h>
 #endif
-
-namespace utils
-{
 
 using namespace std;
 
-Log::Log(const string& filename)
+namespace log
+{
+
+void error(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    m_pAppender = new log4cpp::FileAppender("lastfmliblog", filename);
-    m_pAppender->setLayout(new log4cpp::BasicLayout());
-
-    m_pRootCategory = &log4cpp::Category::getRoot();
-    m_pRootCategory->setAdditivity(false);
-    m_pRootCategory->addAppender(m_pAppender);
+    syslog(LOG_ERR, message.c_str());
 #endif
 }
 
-Log::~Log()
+void info(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    log4cpp::Category::shutdown();
+    syslog(LOG_INFO, message.c_str());
 #endif
 }
 
-void Log::error(const std::string& message)
+void warn(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    m_pRootCategory->error(message);
+    syslog(LOG_WARNING, message.c_str());
 #endif
 }
 
-void Log::info(const std::string& message)
+void debug(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    m_pRootCategory->info(message);
+    syslog(LOG_DEBUG, message.c_str());
+#endif
+}
+
+void critical(const std::string& message)
+{
+#ifdef ENABLE_LOGGING
+    syslog(LOG_CRIT, message.c_str());
 #endif
 }
 
