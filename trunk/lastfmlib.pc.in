@@ -6,5 +6,5 @@ includedir=@includedir@/liblastfm
 Name: liblastfm
 Description: Scrobble you music on last.fm
 Version: 1.0.0
-Libs: -L${libdir} -llastfm @CURL_LIBS@
-Cflags: -I${includedir}
+Libs: -L${libdir} -llastfm @CURL_LIBS@ -lpthread
+Cflags: -I${includedir} -D_REENTRANT

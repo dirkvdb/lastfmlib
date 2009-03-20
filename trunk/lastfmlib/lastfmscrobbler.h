@@ -32,7 +32,6 @@
 #include "utils/condition.h"
 #include "utils/mutex.h"
 #include "utils/thread.h"
-#include "utils/log.h"
 
 
 class LastFmScrobbler
@@ -114,8 +113,6 @@ private:
 
     std::string                 m_Username;
     std::string                 m_Password;
-
-    utils::Log                  m_Log;
 
     bool                        m_Synchronous;
     bool                        m_CommitOnly;
