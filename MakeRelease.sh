@@ -59,4 +59,4 @@ cd ..
 python googlecode_upload.py -s "Release $version" -p $project -u dirk.vdb -w $password -l "Featured,Type-Source,OpSys-Linux" $builddir/$project-$version.tar.gz
 
 #create a tag
-svn copy https://ffmpegthumbnailer.googlecode.com/svn/trunk https://ffmpegthumbnailer.googlecode.com/svn/tags/$project-$version -m "Tag of release $version"
+svn copy https://$project.googlecode.com/svn/trunk https://$project.googlecode.com/svn/tags/$project-$version -m "Tag of release $version"
