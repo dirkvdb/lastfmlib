@@ -13,9 +13,7 @@ SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86"
 IUSE="logging test"
 
-RDEPEND="net-misc/curl
-         logging? ( dev-libs/log4cpp )
-         unittests? ( dev-cpp/unittest++ )"
+RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_compile() {
