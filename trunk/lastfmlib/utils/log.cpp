@@ -28,35 +28,35 @@ namespace log
 void error(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    syslog(LOG_ERR, message.c_str());
+    syslog(LOG_ERR, "%s", message.c_str());
 #endif
 }
 
 void info(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    syslog(LOG_INFO, message.c_str());
+    syslog(LOG_INFO, "%s", message.c_str());
 #endif
 }
 
 void warn(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    syslog(LOG_WARNING, message.c_str());
+    syslog(LOG_WARNING, "%s", message.c_str());
 #endif
 }
 
 void debug(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    syslog(LOG_DEBUG, message.c_str());
+    syslog(LOG_DEBUG, "%s", message.c_str());
 #endif
 }
 
 void critical(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
-    syslog(LOG_CRIT, message.c_str());
+    syslog(LOG_CRIT, "%s", message.c_str());
 #endif
 }
 
