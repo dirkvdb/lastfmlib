@@ -15,6 +15,7 @@
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "stringoperations.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -33,6 +34,39 @@ public:
 void lowercase(string& aString)
 {
     transform(aString.begin(), aString.end(), aString.begin(), ToLower());
+}
+
+void trim(std::string& aString)
+{
+    size_t begin    = 0;
+    size_t end      = aString.size() - 1;
+    
+    while ( aString[begin] == ' '  || aString[begin] == '\t'
+         || aString[begin] == '\r' || aString[begin] == '\n')
+    {
+        ++begin;
+
+        if (begin == aString.size())
+            break;
+    }
+
+    if (begin == aString.size())
+        aString = "";
+
+    while ( aString[end] == ' '  || aString[end] == '\t'
+         || aString[end] == '\r' || aString[end] == '\n')
+    {
+        --end;
+    }
+
+    aString = begin > end ? "" : aString.substr(begin, ++end - begin);
+}
+
+std::string trim(const std::string& aString)
+{
+    string trimmed = aString;
+    trim(trimmed);
+    return trimmed;
 }
 
 void replace(std::string& aString, const std::string& toSearch, const std::string& toReplace)

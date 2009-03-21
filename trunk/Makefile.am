@@ -70,6 +70,5 @@ testrunner_SOURCES =    lastfmlib/unittest/testrunner.cpp \
                         lastfmlib/unittest/lastfmclientmock.cpp
 
 testrunner_CXXFLAGS	=   $(AM_CXXFLAGS)
-testrunner_LDFLAGS  =   liblastfm.la
-testrunner_LDADD    =   $(UNITTEST_LIBS) $(CURL_LIBS) -lpthread
+testrunner_LDADD    =   liblastfm.la $(UNITTEST_LIBS) $(CURL_LIBS) -lpthread
 

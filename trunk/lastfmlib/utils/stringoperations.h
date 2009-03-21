@@ -14,8 +14,8 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef UTILS_STRING_OPERATIONS_H
-#define UTILS_STRING_OPERATIONS_H
+#ifndef STRING_OPERATIONS_H
+#define STRING_OPERATIONS_H
 
 #include <string>
 #include <vector>
@@ -30,6 +30,8 @@
 namespace StringOperations
 {
     void lowercase(std::string& aString);
+    void trim(std::string& aString);
+    std::string trim(const std::string& aString);
     void replace(std::string& aString, const std::string& toSearch, const std::string& toReplace);
     void dos2unix(std::string& aString);
     std::string urlEncode(const std::string& aString);
