@@ -25,7 +25,7 @@ builddir="out-$version"
 rm -rf $builddir
 mkdir -p $builddir
 cd $builddir
-../configure --enable-unittests
+../configure --enable-unittests --enable-debug
 if [ $? != 0 ]
 then
     echo "Configure failed"
