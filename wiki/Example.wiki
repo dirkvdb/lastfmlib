@@ -1,7 +1,7 @@
 #summary Usage example of the lastmlib library.
 #labels Featured
 
-= Usage example =
+= C++ example =
 
 The following code snippet shows how easy it is to use lastfmlib in your application.
 
