@@ -1,9 +1,10 @@
-#include <unittest++/UnitTest++.h>
+#include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
 #include <iostream>
 
-#include "lastfmlib/utils/stringoperations.h"
+#include "../utils/stringoperations.h"
 
 using std::string;
 using std::wstring;
@@ -11,120 +12,136 @@ using std::vector;
 
 using namespace StringOperations;
 
-SUITE(StringOperationsTest)
+TEST(StringOperationsTest, LowerCase)
 {
-    TEST(TestLowerCase)
-    {
-        string testString = "TESTSTRING";
-        lowercase(testString);
-        CHECK_EQUAL("teststring", testString);
-        
-        testString = "teststring";
-        lowercase(testString);
-        CHECK_EQUAL("teststring", testString);
+    string testString = "TESTSTRING";
+    lowercase(testString);
+    EXPECT_EQ("teststring", testString);
 
-        testString = "~!@#$%^&*()_1234567890-";
-        lowercase(testString);
-        CHECK_EQUAL("~!@#$%^&*()_1234567890-", testString);
-        
-        testString = "H_ell_O";
-        lowercase(testString);
-        CHECK_EQUAL("h_ell_o", testString);
-    }
-    
-    TEST(TestDos2Unix)
-    {
-        string testString = "abcde\r\nfgs\r\r\n";
-        dos2unix(testString);
-        CHECK_EQUAL("abcde\nfgs\r\n", testString);
-        
-        testString = "\r\n";
-        dos2unix(testString);
-        CHECK_EQUAL("\n", testString);
-        
-        testString = "teststring";
-        dos2unix(testString);
-        CHECK_EQUAL("teststring", testString);
-    }
-    
-    TEST(TestReplace)
-    {
-        string testString = "abcaabbabbab";
-        replace(testString, "ab", "a");
-        CHECK_EQUAL("acaababa", testString);
-        
-        testString = "stringstringstring";
-        replace(testString, "stringstring", "string");
-        CHECK_EQUAL("stringstring", testString);
-    }
-    
-    TEST(TestTokenize)
-    {
-        string testString = "A-B-C";
-        vector<string> tokenized;
-        tokenized = tokenize(testString, "-");
-        CHECK_EQUAL(3, tokenized.size());
-        CHECK_EQUAL("A", tokenized[0]);
-        CHECK_EQUAL("B", tokenized[1]);
-        CHECK_EQUAL("C", tokenized[2]);
-                
-        testString = "A_*_B_*_C";
-        tokenized = tokenize(testString, "_*_");
-        CHECK_EQUAL(3, tokenized.size());
-        CHECK_EQUAL("A", tokenized[0]);
-        CHECK_EQUAL("B", tokenized[1]);
-        CHECK_EQUAL("C", tokenized[2]);
-        
-        testString = "A_*_B_*_C";
-        tokenized = tokenize(testString, "_**_");
-        CHECK_EQUAL(1, tokenized.size());
-        CHECK_EQUAL("A_*_B_*_C", tokenized[0]);
-    }
-    
-    TEST(TestToNumeric)
-    {
-        int integer;
-        string numericString = "42";
-        toNumeric(numericString, integer);
-        CHECK_EQUAL(42, integer);
-        
-        numericString = "-42";
-        toNumeric(numericString, integer);
-        CHECK_EQUAL(-42, integer);
-        
-        float floatingPoint;
-        numericString = "42.0001";
-        toNumeric(numericString, floatingPoint);
-        CHECK_CLOSE(42.0001f, floatingPoint, 0.00001);
-        
-        numericString = "-42.0001";
-        toNumeric(numericString, floatingPoint);
-        CHECK_CLOSE(-42.0001f, floatingPoint, 0.00001);
-    }
+    testString = "teststring";
+    lowercase(testString);
+    EXPECT_EQ("teststring", testString);
 
-    TEST(TestConvertToUtf8)
-    {
-        string utf8String;
-        wideCharToUtf8(L"Teststring", utf8String);
-        CHECK_EQUAL("Teststring", utf8String);
+    testString = "~!@#$%^&*()_1234567890-";
+    lowercase(testString);
+    EXPECT_EQ("~!@#$%^&*()_1234567890-", testString);
 
-        wideCharToUtf8(L"Trentemøller", utf8String);
-        CHECK_EQUAL("Trentemøller", utf8String);
-    }
+    testString = "H_ell_O";
+    lowercase(testString);
+    EXPECT_EQ("h_ell_o", testString);
+}
 
-    TEST(TestConvertToWidechar)
-    {
-        wstring wideString;
-        utf8ToWideChar("Teststring", wideString);
-        CHECK(wstring(L"Teststring") == wideString);
+TEST(StringOperationsTest, Dos2Unix)
+{
+    string testString = "abcde\r\nfgs\r\r\n";
+    dos2unix(testString);
+    EXPECT_EQ("abcde\nfgs\r\n", testString);
 
-        utf8ToWideChar("Trentemøller", wideString);
-        CHECK(wstring(L"Trentemøller") == wideString);
-    }
+    testString = "\r\n";
+    dos2unix(testString);
+    EXPECT_EQ("\n", testString);
 
-    TEST(TestUrlEncode)
-    {
-        CHECK_EQUAL("!%40%23%24%25%5e%26*()fsdkjh+", urlEncode("!@#$%^&*()fsdkjh "));
-        CHECK_EQUAL("Trentem%c3%b8ller", urlEncode("Trentemøller"));
-    }
+    testString = "teststring";
+    dos2unix(testString);
+    EXPECT_EQ("teststring", testString);
+}
+
+TEST(StringOperationsTest, Replace)
+{
+    string testString = "abcaabbabbab";
+    replace(testString, "ab", "a");
+    EXPECT_EQ("acaababa", testString);
+
+    testString = "stringstringstring";
+    replace(testString, "stringstring", "string");
+    EXPECT_EQ("stringstring", testString);
+}
+
+TEST(StringOperationsTest, Tokenize)
+{
+    string testString = "A-B-C";
+    vector<string> tokenized;
+    tokenized = tokenize(testString, "-");
+    EXPECT_EQ(3, tokenized.size());
+    EXPECT_EQ("A", tokenized[0]);
+    EXPECT_EQ("B", tokenized[1]);
+    EXPECT_EQ("C", tokenized[2]);
+
+    testString = "A_*_B_*_C";
+    tokenized = tokenize(testString, "_*_");
+    EXPECT_EQ(3, tokenized.size());
+    EXPECT_EQ("A", tokenized[0]);
+    EXPECT_EQ("B", tokenized[1]);
+    EXPECT_EQ("C", tokenized[2]);
+
+    testString = "A_*_B_*_C";
+    tokenized = tokenize(testString, "_**_");
+    EXPECT_EQ(1, tokenized.size());
+    EXPECT_EQ("A_*_B_*_C", tokenized[0]);
+}
+
+TEST(StringOperationsTest, ToNumeric)
+{
+    int integer;
+    string numericString = "42";
+    toNumeric(numericString, integer);
+    EXPECT_EQ(42, integer);
+
+    numericString = "-42";
+    toNumeric(numericString, integer);
+    EXPECT_EQ(-42, integer);
+
+    float floatingPoint;
+    numericString = "42.0001";
+    toNumeric(numericString, floatingPoint);
+    EXPECT_FLOAT_EQ(42.0001f, floatingPoint);
+
+    numericString = "-42.0001";
+    toNumeric(numericString, floatingPoint);
+    EXPECT_FLOAT_EQ(-42.0001f, floatingPoint);
+}
+
+TEST(StringOperationsTest, ConvertToUtf8)
+{
+    string utf8String;
+    wideCharToUtf8(L"Teststring", utf8String);
+    EXPECT_EQ("Teststring", utf8String);
+
+    wideCharToUtf8(L"Trentemøller", utf8String);
+    EXPECT_EQ("Trentemøller", utf8String);
+}
+
+TEST(StringOperationsTest, ConvertToWidechar)
+{
+    wstring wideString;
+    utf8ToWideChar("Teststring", wideString);
+    EXPECT_TRUE(wstring(L"Teststring") == wideString);
+
+    utf8ToWideChar("Trentemøller", wideString);
+    EXPECT_TRUE(wstring(L"Trentemøller") == wideString);
+}
+
+TEST(StringOperationsTest, UrlEncode)
+{
+    EXPECT_EQ("!%40%23%24%25%5e%26*()fsdkjh+", urlEncode("!@#$%^&*()fsdkjh "));
+    EXPECT_EQ("Trentem%c3%b8ller", urlEncode("Trentemøller"));
+}
+
+TEST(StringOperationsTest, Trim)
+{
+    string s = "  a a  a ";
+    trim(s);
+    EXPECT_EQ("a a  a", s);
+
+    s = "  \r \n\t\r\n a \r\t\n a  a \t\t\t";
+    trim(s);
+    EXPECT_EQ("a \r\t\n a  a", s);
+
+    s = "";
+    trim(s);
+    EXPECT_EQ("", s);
+
+    s = " \r\n\t";
+    trim(s);
+    EXPECT_EQ("", s);
 }

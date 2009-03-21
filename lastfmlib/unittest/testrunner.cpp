@@ -1,16 +1,23 @@
-#include <unittest++/UnitTest++.h>
-
-#include <locale.h>
 #include <iostream>
+#include <string>
+#include <unistd.h>
+#include <locale.h>
+
+#include <gtest/gtest.h>
 
 using namespace std;
 
-int main(void)
+int main(int argc, char **argv)
 {
     if (!setlocale(LC_CTYPE, ""))
     {
         cerr << "Locale not specified. Check LANG, LC_CTYPE, LC_ALL" << endl;
         return 1;
     }
-    return UnitTest::RunAllTests();
+
+    std::cout << "Running gejengel tests" << std::endl;
+
+    testing::InitGoogleTest(&argc, argv);
+    umask(0);
+    return RUN_ALL_TESTS();
 }
