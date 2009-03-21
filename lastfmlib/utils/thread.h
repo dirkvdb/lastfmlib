@@ -14,8 +14,8 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef THERAD_H
-#define THERAD_H
+#ifndef UTILS_THERAD_H
+#define UTILS_THERAD_H
 
 #include <pthread.h>
 
