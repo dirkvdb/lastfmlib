@@ -1,5 +1,8 @@
 lastfmlib
 
+Version 0.2.0 (23-03-2009)
+- Interface change which adds option for hashed passwords
+
 Version 0.1.4 (21-03-2009)
 - Use syslog for logging in stead of log4cpp
 - Made inclusion guards more specific to avoid build issues
