@@ -32,7 +32,7 @@ static const time_t MIN_TRACK_LENGTH_TO_SUBMIT  = 30;
 static const time_t MIN_SECS_BETWEEN_CONNECT    = 60;
 static const time_t MAX_SECS_BETWEEN_CONNECT    = 7200;
 
-LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool synchronous)
+LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool hashedPass, bool synchronous)
 : m_pLastFmClient(new LastFmClient())
 , m_LastConnectionAttempt(0)
 , m_TrackPlayTime(-1)
@@ -47,6 +47,11 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool sy
 , m_Synchronous(synchronous)
 , m_CommitOnly(false)
 {
+    if (!hashedPass)
+    {
+        m_Password = LastFmClient::generatePasswordHash(pass);
+    }
+    
     authenticateIfNecessary();
 }
 

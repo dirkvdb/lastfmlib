@@ -63,12 +63,13 @@ typedef struct submission_info_struct
 /** Create Last.fm scrobbler struct
  * \param username Last.fm username
  * \param password Last.fm password
+ * \param hashed_password If 1 the password is hashed, if 0 it's plain text
  * \param synchronous If 0 all functions will be executed in
  * a thread and return immediately (prevents long blocking methods in
  * case of network problems)
  * \return lastfm_scrobbler structure
  */
-lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int synchronous);
+lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int hashed_password, int synchronous);
 
 /** Destroy the Last.fm scrobbler struct
  * \param scrobbler structure to destroy
@@ -111,6 +112,14 @@ void finished_playing(lastfm_scrobbler* scrobbler);
  * \param paused 1 if track is being paused, 0 if being unpaused
  */
 void pause_playing(lastfm_scrobbler* scrobbler, int paused);
+
+/** Generates a hashed password
+ * The password has to be freed after the call to create_scrobbler
+ * to avoid memory leaks
+ * \param password The password to generate a hash for
+ * \return the char pointer to the hashed password
+ */
+char* create_password_hash(const char* password);
 
 #ifdef __cplusplus
 }
