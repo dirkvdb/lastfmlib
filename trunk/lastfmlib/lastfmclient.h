@@ -43,7 +43,7 @@ public:
 
     /** Attempt to authenticate with the Last.fm server
      * \param user an std::string containing the username
-     * \param pass an std::string containing the password
+     * \param pass an std::string containing a hashed password (use static generatePasswordHash method)
      * \exception ConnectionError when connection to Last.fm server fails
      * \exception std::logic_error when authentication with Last.fm server fails
      */
@@ -69,6 +69,13 @@ public:
      * \exception std::logic_error when submitting the Track info collection fails
      */
     virtual void submit(const SubmissionInfoCollection& infoCollection);
+
+    /** Generates an md5 hash of the supplied password which can also be used
+     * to login and is safer to store
+     * \param password the password to generate a hash for
+     * \return a string containing the hashed password
+     */
+    static std::string generatePasswordHash(const std::string& password);
 
 private:
     std::string createRequestString(const std::string& user, const std::string& pass);

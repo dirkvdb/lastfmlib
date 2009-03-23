@@ -40,11 +40,12 @@ public:
     /** Constructor
      * \param user Last.fm user name
      * \param pass Last.fm password for user
+     * \param hashedPass true if the password is hashed, false otherwise
      * \param synchronous if false all public methods will be executed in
      * a thread and return immediately (prevents long blocking methods in
      * case of network problems)
      */
-    LastFmScrobbler(const std::string& user, const std::string& pass, bool synchronous);
+    LastFmScrobbler(const std::string& user, const std::string& pass, bool hashedPass, bool synchronous);
     /** Destructor */
     virtual ~LastFmScrobbler();
 

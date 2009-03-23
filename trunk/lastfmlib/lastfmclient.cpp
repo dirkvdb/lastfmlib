@@ -152,7 +152,12 @@ string generateMD5String(const string& data)
 
 string generateAutenticationToken(const string& pass, time_t timestamp)
 {
-    return generateMD5String(generateMD5String(pass) + getPostData(timestamp));
+    return generateMD5String(pass + getPostData(timestamp));
+}
+
+string LastFmClient::generatePasswordHash(const string& password)
+{
+    return generateMD5String(password);
 }
 
 string LastFmClient::createRequestString(const string& user, const string& pass)

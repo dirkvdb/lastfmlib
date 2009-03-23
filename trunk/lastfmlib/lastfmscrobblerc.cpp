@@ -19,11 +19,12 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
-extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int synchronous)
+extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int hashed_password, int synchronous)
 {
     lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
-    scrobbler->scrobbler    = new LastFmScrobbler(username, password, synchronous);
+    scrobbler->scrobbler    = new LastFmScrobbler(username, password, hashed_password, synchronous);
     return scrobbler;
 }
 
@@ -109,4 +110,9 @@ extern "C" void finished_playing(lastfm_scrobbler* scrobbler)
 extern "C" void pause_playing(lastfm_scrobbler* scrobbler, int paused)
 {
     reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->pausePlaying(paused != 0);
+}
+
+extern "C" char* create_password_hash(const char* password)
+{
+    return strdup(LastFmClient::generatePasswordHash(password).c_str());
 }
