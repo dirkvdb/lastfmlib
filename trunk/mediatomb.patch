@@ -291,7 +291,7 @@ Index: src/lastfm.cc
 +    String username = config->getOption(CFG_LASTFM_USERNAME);
 +    String password = config->getOption(CFG_LASTFM_PASSWORD);
 +
-+    scrobbler = create_scrobbler(username.c_str(), password.c_str(), false);
++    scrobbler = create_scrobbler(username.c_str(), password.c_str(), 0, 0);
 +    set_commit_only_mode(scrobbler, 1);
 +}
 +

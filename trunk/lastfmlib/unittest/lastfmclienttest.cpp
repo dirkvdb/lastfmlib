@@ -12,7 +12,7 @@ using std::string;
 TEST(LastFmClientTest, LastFmClient)
 {
 #if 0
-    lastfm_scrobbler* scrobbler = create_scrobbler("liblastfmtest", "testlib", true);
+    lastfm_scrobbler* scrobbler = create_scrobbler("liblastfmtest", "testlib", false, true);
     set_commit_only_mode(scrobbler, 1);
 
     submission_info* info = create_submission_info();
@@ -29,7 +29,7 @@ TEST(LastFmClientTest, LastFmClient)
     destroy_scrobbler(scrobbler);
 #endif
 #if 0
-    LastFmScrobbler scrobbler("liblastfmtest", "testlib", true);
+    LastFmScrobbler scrobbler("liblastfmtest", "testlib", false, true);
     SubmissionInfo info(L"Richie Hawtin", L"The Tunnel");
     info.setTrackLength(35);
 
