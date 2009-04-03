@@ -38,6 +38,11 @@ static const string CLIENT_VERSION = "1.0";
 
 void LastFmClient::handshake(const string& user, const string& pass)
 {
+    if (user.empty() || pass.empty())
+    {
+        throw logic_error("Failed to connect to last.fm: empty username or password");
+    }
+
     string response;
     try
     {
