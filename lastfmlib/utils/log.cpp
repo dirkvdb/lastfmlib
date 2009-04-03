@@ -16,9 +16,15 @@
 
 #include "log.h"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef ENABLE_LOGGING
     #include <syslog.h>
 #endif
+
+#include <iostream>
 
 using namespace std;
 
@@ -30,12 +36,18 @@ void error(const std::string& message)
 #ifdef ENABLE_LOGGING
     syslog(LOG_ERR, "%s", message.c_str());
 #endif
+
+    cerr << "ERROR: " << message << endl;
 }
 
 void info(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
     syslog(LOG_INFO, "%s", message.c_str());
+#endif
+
+#ifdef ENABLE_DEBUG
+    cout << "INFO:  " << message << endl;
 #endif
 }
 
@@ -44,12 +56,18 @@ void warn(const std::string& message)
 #ifdef ENABLE_LOGGING
     syslog(LOG_WARNING, "%s", message.c_str());
 #endif
+
+    cout << "WARN:  " << message << endl;
 }
 
 void debug(const std::string& message)
 {
 #ifdef ENABLE_LOGGING
     syslog(LOG_DEBUG, "%s", message.c_str());
+#endif
+
+#ifdef ENABLE_DEBUG
+    cout << "DEBUG: " << message << endl;
 #endif
 }
 
@@ -58,6 +76,8 @@ void critical(const std::string& message)
 #ifdef ENABLE_LOGGING
     syslog(LOG_CRIT, "%s", message.c_str());
 #endif
+
+    cerr << "CRIT:  " << message << endl;
 }
 
 }
