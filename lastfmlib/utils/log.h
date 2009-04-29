@@ -17,15 +17,74 @@
 #ifndef UTILS_LOG_H
 #define UTILS_LOG_H
 
-#include <string>
-
 namespace log
 {
-    void error(const std::string& message);
-    void info(const std::string& message);
-    void warn(const std::string& message);
-    void debug(const std::string& message);
-    void critical(const std::string& message);
+    template<typename T1>
+    void info(const T1& t1);
+    template<typename T1, typename T2>
+    void info(const T1& t1, const T2& t2);
+    template<typename T1, typename T2, typename T3>
+    void info(const T1& t1, const T2& t2, const T3& t3);
+    template<typename T1, typename T2, typename T3, typename T4>
+    void info(const T1& t1, const T2& t2, const T3& t3, const T4& t4);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    void info(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    void info(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6);
+
+    template<typename T1>
+    void warn(const T1& t1);
+    template<typename T1, typename T2>
+    void warn(const T1& t1, const T2& t2);
+    template<typename T1, typename T2, typename T3>
+    void warn(const T1& t1, const T2& t2, const T3& t3);
+    template<typename T1, typename T2, typename T3, typename T4>
+    void warn(const T1& t1, const T2& t2, const T3& t3, const T4& t4);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    void warn(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    void warn(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6);
+
+    template<typename T1>
+    void critical(const T1& t1);
+    template<typename T1, typename T2>
+    void critical(const T1& t1, const T2& t2);
+    template<typename T1, typename T2, typename T3>
+    void critical(const T1& t1, const T2& t2, const T3& t3);
+    template<typename T1, typename T2, typename T3, typename T4>
+    void critical(const T1& t1, const T2& t2, const T3& t3, const T4& t4);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    void critical(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    void critical(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6);
+
+    template<typename T1>
+    void error(const T1& t1);
+    template<typename T1, typename T2>
+    void error(const T1& t1, const T2& t2);
+    template<typename T1, typename T2, typename T3>
+    void error(const T1& t1, const T2& t2, const T3& t3);
+    template<typename T1, typename T2, typename T3, typename T4>
+    void error(const T1& t1, const T2& t2, const T3& t3, const T4& t4);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    void error(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    void error(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6);
+
+    template<typename T1>
+    void debug(const T1& t1);
+    template<typename T1, typename T2>
+    void debug(const T1& t1, const T2& t2);
+    template<typename T1, typename T2, typename T3>
+    void debug(const T1& t1, const T2& t2, const T3& t3);
+    template<typename T1, typename T2, typename T3, typename T4>
+    void debug(const T1& t1, const T2& t2, const T3& t3, const T4& t4);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    void debug(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5);
+    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    void debug(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6);
 }
+
+#include "log.cpp"
 
 #endif

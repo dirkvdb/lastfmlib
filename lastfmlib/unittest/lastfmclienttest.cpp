@@ -16,14 +16,17 @@ TEST(LastFmClientTest, LastFmClient)
     set_commit_only_mode(scrobbler, 1);
 
     submission_info* info = create_submission_info();
-    info->artist = "Richie Hawtin";
-    info->track = "The Tunnel";
+    info->artist = strdup("Richie Hawtin");
+    info->track = strdup("The Tunnel");
     info->track_length_in_secs = 35;
 
     started_playing(scrobbler, info);
     destroy_submission_info(info);
 
     sleep(20);
+
+    free(info->artist);
+    free(info->track);
 
     finished_playing(scrobbler);
     destroy_scrobbler(scrobbler);
