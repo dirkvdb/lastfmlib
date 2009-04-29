@@ -1,5 +1,8 @@
 lastfmlib
 
+Version 0.2.1 (??-??-2009)
+- Fixed authentication response check to avoid authentication errors
+
 Version 0.2.0 (23-03-2009)
 - Interface change which adds option for hashed passwords
 

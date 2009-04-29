@@ -24,6 +24,7 @@
 #include <ctime>
 
 #include "md5/md5.h"
+#include "utils/log.h"
 #include "utils/stringoperations.h"
 
 #include "nowplayinginfo.h"
@@ -58,8 +59,9 @@ void LastFmClient::handshake(const string& user, const string& pass)
     {
         throw logic_error("Failed to connect to last.fm: " + lines[0]);
     }
-    else if (lines.size() != 5)
+    else if (lines.size() < 4)
     {
+        log::debug("Response:", response, "( lines", lines.size(), ")");
         throw logic_error("Failed to connect to last.fm: invalid response length");
     }
 

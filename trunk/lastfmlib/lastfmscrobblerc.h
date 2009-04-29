@@ -58,7 +58,7 @@ typedef struct submission_info_struct
     enum TrackSource    track_source;         /**< \brief time the track source (default UserChosen) */
     enum TrackRating    track_rating;         /**< \brief time the track started (default None) */
     char*               recommendation_key;   /**< \brief The 5-digit Last.fm recommendation key needed when track_source is set to LastFm (default NULL) */
-} submission_info; /**< \brief struct containing info about the song to commit */
+} submission_info; /**< \brief struct containing info about the song to commit, memory management of the char pointers is up to you (you could have used C++ ;-) */
 
 /** Create Last.fm scrobbler struct
  * \param username Last.fm username

@@ -2,6 +2,8 @@
 #include <string>
 #include <unistd.h>
 #include <locale.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <gtest/gtest.h>
 
