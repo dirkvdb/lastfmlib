@@ -28,6 +28,13 @@ extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* 
     return scrobbler;
 }
 
+extern "C" lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, const char* client_version, const char* username, const char* password, int hashed_password, int synchronous)
+{
+    lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
+    scrobbler->scrobbler    = new LastFmScrobbler(client_identifier, client_version, username, password, hashed_password, synchronous);
+    return scrobbler;
+}
+
 extern "C" void destroy_scrobbler(lastfm_scrobbler* scrobbler)
 {
     delete reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler);

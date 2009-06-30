@@ -1,4 +1,4 @@
-//    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
+//    Copyright (C) 2009 Dirk Vanden Boer <dirk.vdb@gmail.com>
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -39,6 +39,17 @@ class SubmissionInfoCollection;
 class LastFmClient
 {
 public:
+    /** Default constructor which will use the Last.fm client identifier
+     * and version of lastfmlib
+     */
+    LastFmClient();
+
+    /** Constructor
+     * \param clientIdentifier an std::string containing the Last.fm client identifier
+     * \param clientVersion an std::string containing the Last.fm client version
+     */
+    LastFmClient(const std::string& clientIdentifier, const std::string& clientVersion);
+
     virtual ~LastFmClient() {}
 
     /** Attempt to authenticate with the Last.fm server
@@ -86,6 +97,8 @@ private:
     void submit(const std::string& postData);
 
     UrlClient       m_UrlClient;
+    std::string     m_ClientIdentifier;
+    std::string     m_ClientVersion;
     std::string     m_SessionId;
     std::string     m_NowPlayingUrl;
     std::string     m_SubmissionUrl;

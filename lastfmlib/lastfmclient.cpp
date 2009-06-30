@@ -1,4 +1,4 @@
-//    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
+//    Copyright (C) 2009 Dirk Vanden Boer <dirk.vdb@gmail.com>
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -36,6 +36,18 @@ using namespace StringOperations;
 
 static const string CLIENT_IDENTIFIER = "lfc";
 static const string CLIENT_VERSION = "1.0";
+
+LastFmClient::LastFmClient()
+: m_ClientIdentifier(CLIENT_IDENTIFIER)
+, m_ClientVersion(CLIENT_VERSION)
+{
+}
+
+LastFmClient::LastFmClient(const std::string& clientIdentifier, const std::string& clientVersion)
+: m_ClientIdentifier(clientIdentifier)
+, m_ClientVersion(clientVersion)
+{
+}
 
 void LastFmClient::handshake(const string& user, const string& pass)
 {
@@ -173,8 +185,8 @@ string LastFmClient::createRequestString(const string& user, const string& pass)
 
     stringstream request;
     request << "http://post.audioscrobbler.com/?hs=true&p=1.2"
-            << "&c=" << CLIENT_IDENTIFIER
-            << "&v=" << CLIENT_VERSION
+            << "&c=" << m_ClientIdentifier
+            << "&v=" << m_ClientVersion
             << "&u=" << user
             << "&t=" << timestamp
             << "&a=" << generateAutenticationToken(pass, timestamp);

@@ -37,7 +37,7 @@
 class LastFmScrobbler
 {
 public:
-    /** Constructor
+    /** Constructor which will use the Last.fm client identifier and version of lastfmlib 
      * \param user Last.fm user name
      * \param pass Last.fm password for user
      * \param hashedPass true if the password is hashed, false otherwise
@@ -46,6 +46,19 @@ public:
      * case of network problems)
      */
     LastFmScrobbler(const std::string& user, const std::string& pass, bool hashedPass, bool synchronous);
+
+    /** Constructor using your own client identifier (see http://www.last.fm/api/submissions#1.1)
+     * \param clientIdentifier the Last.fm client identifier
+     * \param clientVersion the Last.fm client version
+     * \param user Last.fm user name
+     * \param pass Last.fm password for user
+     * \param hashedPass true if the password is hashed, false otherwise
+     * \param synchronous if false all public methods will be executed in
+     * a thread and return immediately (prevents long blocking methods in
+     * case of network problems)
+     */
+    LastFmScrobbler(const std::string& clientIdentifier, const std::string& clientVersion, const std::string& user, const std::string& pass, bool hashedPass, bool synchronous);
+    
     /** Destructor */
     virtual ~LastFmScrobbler();
 
