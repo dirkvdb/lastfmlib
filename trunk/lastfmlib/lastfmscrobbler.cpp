@@ -1,4 +1,4 @@
-//    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
+//    Copyright (C) 2009 Dirk Vanden Boer <dirk.vdb@gmail.com>
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -34,6 +34,29 @@ static const time_t MAX_SECS_BETWEEN_CONNECT    = 7200;
 
 LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool hashedPass, bool synchronous)
 : m_pLastFmClient(new LastFmClient())
+, m_LastConnectionAttempt(0)
+, m_TrackPlayTime(-1)
+, m_TrackResumeTime(0)
+, m_AuthenticateThread(LastFmScrobbler::authenticateThread, this)
+, m_SendInfoThread(LastFmScrobbler::sendInfoThread, this)
+, m_FinishPlayingThread(LastFmScrobbler::finishPlayingThread, this)
+, m_Authenticated(false)
+, m_HardConnectionFailureCount(0)
+, m_Username(user)
+, m_Password(pass)
+, m_Synchronous(synchronous)
+, m_CommitOnly(false)
+{
+    if (!hashedPass)
+    {
+        m_Password = LastFmClient::generatePasswordHash(pass);
+    }
+    
+    authenticateIfNecessary();
+}
+
+LastFmScrobbler::LastFmScrobbler(const string& clientIdentifier, const string& clientVersion, const string& user, const string& pass, bool hashedPass, bool synchronous)
+: m_pLastFmClient(new LastFmClient(clientIdentifier, clientVersion))
 , m_LastConnectionAttempt(0)
 , m_TrackPlayTime(-1)
 , m_TrackResumeTime(0)

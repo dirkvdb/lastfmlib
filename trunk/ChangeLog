@@ -1,5 +1,8 @@
 lastfmlib
 
+Version 0.3.0 (30-06-2009)
+- Added option to specify your own client Last.fm client identier
+
 Version 0.2.1 (29-04-2009)
 - Fixed authentication response check to avoid authentication errors
 

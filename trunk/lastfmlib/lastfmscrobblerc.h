@@ -60,7 +60,7 @@ typedef struct submission_info_struct
     char*               recommendation_key;   /**< \brief The 5-digit Last.fm recommendation key needed when track_source is set to LastFm (default NULL) */
 } submission_info; /**< \brief struct containing info about the song to commit, memory management of the char pointers is up to you (you could have used C++ ;-) */
 
-/** Create Last.fm scrobbler struct
+/** Create Last.fm scrobbler struct which will use the Last.fm client identifier and version of lastfmlib 
  * \param username Last.fm username
  * \param password Last.fm password
  * \param hashed_password If 1 the password is hashed, if 0 it's plain text
@@ -70,6 +70,19 @@ typedef struct submission_info_struct
  * \return lastfm_scrobbler structure
  */
 lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int hashed_password, int synchronous);
+
+/** Create Last.fm scrobbler struct using your own client identifier (see http://www.last.fm/api/submissions#1.1)
+ * \param clientIdentifier the Last.fm client identifier
+ * \param clientVersion the Last.fm client version
+ * \param username Last.fm username
+ * \param password Last.fm password
+ * \param hashed_password If 1 the password is hashed, if 0 it's plain text
+ * \param synchronous If 0 all functions will be executed in
+ * a thread and return immediately (prevents long blocking methods in
+ * case of network problems)
+ * \return lastfm_scrobbler structure
+ */
+lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, const char* client_version, const char* username, const char* password, int hashed_password, int synchronous);
 
 /** Destroy the Last.fm scrobbler struct
  * \param scrobbler structure to destroy
