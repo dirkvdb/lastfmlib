@@ -11,14 +11,14 @@ SRC_URI="http://${PN}.googlecode.com/files/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86"
-IUSE="logging test debug"
+IUSE="syslog test debug"
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_compile() {
     econf \
-        $(use_enable logging) \
+        $(use_enable syslog logging) \
         $(use_enable debug) \
         $(use_enable test unittests) || die
 
