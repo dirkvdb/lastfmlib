@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit autotools eutils
+EAPI=2
+
+inherit eutils
 
 DESCRIPTION="C++ library to scrobble tracks on Last.fm"
 HOMEPAGE="http://code.google.com/p/lastfmlib"
@@ -10,22 +12,20 @@ SRC_URI="http://${PN}.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86"
-IUSE="syslog test debug"
+KEYWORDS="~amd64 ~x86"
+IUSE="syslog debug"
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
-src_compile() {
+src_configure() {
     econf \
         $(use_enable syslog logging) \
         $(use_enable debug) \
-        $(use_enable test unittests) || die
-
-    emake || die "emake failed."
+        --disable-unittests || die
 }
 
 src_install() {
     emake DESTDIR="${D}" install || die "emake install failed."
-    dodoc AUTHORS ChangeLog README TODO
+    dodoc AUTHORS ChangeLog README TODO || die "dodoc failed"
 }

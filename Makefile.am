@@ -1,6 +1,6 @@
-lib_LTLIBRARIES = liblastfm.la
+lib_LTLIBRARIES = liblastfmlib.la
 
-liblastfm_la_SOURCES        =   lastfmlib/urlclient.h \
+liblastfmlib_la_SOURCES       = lastfmlib/urlclient.h \
                                 lastfmlib/urlclient.cpp \
                                 lastfmlib/lastfmclient.h \
                                 lastfmlib/lastfmclient.cpp \
@@ -46,9 +46,9 @@ nobase_include_HEADERS   =      lastfmlib/lastfmclient.h \
                                 lastfmlib/utils/condition.h \
                                 lastfmlib/utils/log.h
 
-liblastfm_la_CXXFLAGS       =   $(AM_CXXFLAGS)
-liblastfm_la_LDFLAGS        =   -version-info 3:0:2
-liblastfm_la_LIBADD         =   $(CURL_LIBS) -lpthread
+liblastfmlib_la_CXXFLAGS       =   $(AM_CXXFLAGS)
+liblastfmlib_la_LDFLAGS        =   -version-info 3:0:2
+liblastfmlib_la_LIBADD         =   $(CURL_LIBS) -lpthread
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -70,5 +70,5 @@ testrunner_SOURCES =    lastfmlib/unittest/testrunner.cpp \
                         lastfmlib/unittest/lastfmclientmock.cpp
 
 testrunner_CXXFLAGS	=   $(AM_CXXFLAGS)
-testrunner_LDADD    =   liblastfm.la $(UNITTEST_LIBS) $(CURL_LIBS) -lpthread
+testrunner_LDADD    =   liblastfmlib.la $(UNITTEST_LIBS) $(CURL_LIBS) -lpthread
 
