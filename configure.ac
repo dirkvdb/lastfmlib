@@ -61,7 +61,7 @@ AM_CONDITIONAL(ENABLE_UNITTEST, test "$enable_unittests" = "yes")
 AC_SUBST([pkgconfigdir])
 AC_MSG_NOTICE([pkgconfig directory is ${pkgconfigdir}])
 
-AC_CONFIG_FILES([lastfmlib.pc:lastfmlib.pc.in])
+AC_CONFIG_FILES([liblastfmlib.pc:liblastfmlib.pc.in])
 
 AC_OUTPUT([
     Makefile
