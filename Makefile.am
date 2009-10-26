@@ -53,7 +53,7 @@ liblastfmlib_la_LIBADD         =   $(CURL_LIBS) -lpthread
 ACLOCAL_AMFLAGS = -I m4
 
 pkgconfigdir = @pkgconfigdir@
-pkgconfig_DATA = lastfmlib.pc
+pkgconfig_DATA = liblastfmlib.pc
 
 if ENABLE_UNITTEST
 check_PROGRAMS = testrunner
