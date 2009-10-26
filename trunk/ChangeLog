@@ -1,4 +1,6 @@
 lastfmlib
+Version 0.3.1 (16-10-2009)
+- Changed library name to avoid name collision with other library
 
 Version 0.3.0 (30-06-2009)
 - Added option to specify your own client Last.fm client identier

@@ -1,4 +1,4 @@
-AC_INIT([lastfmlib], [0.3.0])
+AC_INIT([lastfmlib], [0.3.1])
 AC_CONFIG_SRCDIR([lastfmlib/lastfmscrobbler.cpp])
 AM_INIT_AUTOMAKE
 
