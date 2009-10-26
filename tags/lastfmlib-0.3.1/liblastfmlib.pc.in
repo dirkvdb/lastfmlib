@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/liblastfm
+
+Name: liblastfm
+Description: Scrobble you music on last.fm
+Version: 1.0.0
+Libs: -L${libdir} -llastfmlib @CURL_LIBS@ -lpthread
+Cflags: -I${includedir} -D_REENTRANT
