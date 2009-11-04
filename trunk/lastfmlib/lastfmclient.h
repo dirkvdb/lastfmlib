@@ -87,6 +87,14 @@ public:
      * \return a string containing the hashed password
      */
     static std::string generatePasswordHash(const std::string& password);
+    
+    /** Set the proxy server to use for the connection to the Last.fm servers
+     * \param server the address of the proxy server
+     * \param port the port of the proxy server
+     * \param username the username if the server needs authentication
+     * \param password the password if the server needs authentication
+     */
+    void setProxy(const std::string& server, uint32_t port, const std::string& username = "", const std::string& password = "");
 
 private:
     std::string createRequestString(const std::string& user, const std::string& pass);

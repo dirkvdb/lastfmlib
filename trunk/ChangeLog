@@ -1,4 +1,7 @@
 lastfmlib
+Version 0.?.? (??-??-2009)
+- Option added to override the systems proxy server
+
 Version 0.3.1 (16-10-2009)
 - Changed library name to avoid name collision with other library
 

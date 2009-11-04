@@ -22,6 +22,8 @@ liblastfmlib_la_SOURCES       = lastfmlib/urlclient.h \
                                 lastfmlib/utils/stringoperations.cpp \
                                 lastfmlib/utils/mutex.h \
                                 lastfmlib/utils/mutex.cpp \
+                                lastfmlib/utils/numericoperations.h \
+                                lastfmlib/utils/numericoperations.cpp \
                                 lastfmlib/utils/thread.h \
                                 lastfmlib/utils/thread.cpp \
                                 lastfmlib/utils/scopedlock.h \

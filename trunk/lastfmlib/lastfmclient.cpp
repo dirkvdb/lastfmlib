@@ -179,6 +179,11 @@ string LastFmClient::generatePasswordHash(const string& password)
     return generateMD5String(password);
 }
 
+void LastFmClient::setProxy(const std::string& server, uint32_t port, const std::string& username, const std::string& password)
+{
+	m_UrlClient.setProxy(server, port, username, password);
+}
+
 string LastFmClient::createRequestString(const string& user, const string& pass)
 {
     time_t timestamp = time(0);

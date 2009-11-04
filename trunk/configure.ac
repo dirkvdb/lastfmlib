@@ -1,4 +1,4 @@
-AC_INIT([lastfmlib], [0.3.1])
+AC_INIT([lastfmlib], [0.4.0])
 AC_CONFIG_SRCDIR([lastfmlib/lastfmscrobbler.cpp])
 AM_INIT_AUTOMAKE
 
@@ -9,6 +9,8 @@ AC_PROG_LIBTOOL
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_HEADER_STDC
+
+AM_CONFIG_HEADER(config.h)
 
 PKG_CHECK_MODULES(CURL, libcurl, HAVE_CURL=yes, AC_MSG_ERROR([ +Could not find libcurl]))
 
@@ -26,8 +28,8 @@ AC_ARG_ENABLE(debug,
    DEBUG=$enableval)
 
 AM_CONDITIONAL(DEBUG, test "$enable_debug" = "yes")
-
 if test "$DEBUG" = "yes"; then
+	AC_DEFINE(ENABLE_DEBUG, [1], Enable debug mode)
     CXXFLAGS="-g -O1 -Wall -Werror -Wfatal-errors"
 fi
 
@@ -40,7 +42,7 @@ AC_ARG_ENABLE(logging,
 
 if test "$ENABLE_LOGGING" = "yes"; then
     AC_CHECK_HEADER(syslog.h)
-    AC_DEFINE(ENABLE_LOGGING)
+    AC_DEFINE(ENABLE_LOGGING, [1], Enable logging to syslog)
 fi
 AM_CONDITIONAL(ENABLE_LOGGING, test "$enable_logging" = "yes")
 
