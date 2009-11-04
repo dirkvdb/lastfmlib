@@ -61,6 +61,11 @@ public:
     
     /** Destructor */
     virtual ~LastFmScrobbler();
+    
+    /** Authenticate with the Last.fm server, this must be called before
+     * you can start comitting tracks
+     */
+    void authenticate();
 
     /** When commit only mode is set, now playinginfo is not updated on
      * Last.fm, tracks will only be commited once they finished playing
@@ -79,11 +84,20 @@ public:
      * track will be submitted to Last.fm
      */
     void finishedPlaying();
+    
     /** Indicate that playback of the current track has been (un)paused
      * \param paused true if track is being paused, false if being unpaused
      */
     void pausePlaying(bool paused);
-
+    
+    /** Set the proxy server to use for the connection to the Last.fm servers
+     * \param server the address of the proxy server
+     * \param port the port of the proxy server
+     * \param username the username if the server needs authentication
+     * \param password the password if the server needs authentication
+     */
+    void setProxy(const std::string& server, uint32_t port, const std::string& username = "", const std::string& password = "");
+    
 protected:
     LastFmScrobbler(bool synchronous);
     LastFmClient*   m_pLastFmClient;
@@ -102,7 +116,7 @@ protected:
 
 private:
     void authenticateIfNecessary();
-    void authenticate();
+    void authenticateNow();
     bool trackCanBeCommited(const SubmissionInfo& info);
     bool canReconnect();
     void submitTrack(const SubmissionInfo& info);

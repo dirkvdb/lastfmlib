@@ -18,12 +18,15 @@
 #define URL_CLIENT_H
 
 #include <string>
+#include <inttypes.h>
 
 class UrlClient
 {
 public:
     UrlClient();
     ~UrlClient();
+    
+    void setProxy(const std::string& server, uint32_t port = 8080, const std::string& username = "", const std::string& password = "");
 
     void get(const std::string& url, std::string& response);
     void getBinary(const std::string& url, void* callback, void* parameter);
@@ -32,6 +35,9 @@ public:
 private:
     void initialize();
     void cleanup();
+    
+    std::string m_ProxyServer;
+    std::string	m_ProxyUserPass;
 };
 
 #endif

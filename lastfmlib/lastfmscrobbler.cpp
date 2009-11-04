@@ -51,8 +51,6 @@ LastFmScrobbler::LastFmScrobbler(const string& user, const string& pass, bool ha
     {
         m_Password = LastFmClient::generatePasswordHash(pass);
     }
-    
-    authenticateIfNecessary();
 }
 
 LastFmScrobbler::LastFmScrobbler(const string& clientIdentifier, const string& clientVersion, const string& user, const string& pass, bool hashedPass, bool synchronous)
@@ -74,8 +72,6 @@ LastFmScrobbler::LastFmScrobbler(const string& clientIdentifier, const string& c
     {
         m_Password = LastFmClient::generatePasswordHash(pass);
     }
-    
-    authenticateIfNecessary();
 }
 
 LastFmScrobbler::LastFmScrobbler(bool synchronous)
@@ -97,6 +93,11 @@ LastFmScrobbler::~LastFmScrobbler()
 {
     joinThreads();
     delete m_pLastFmClient;
+}
+
+void LastFmScrobbler::authenticate()
+{
+	authenticateIfNecessary();
 }
 
 void LastFmScrobbler::setCommitOnlyMode(bool enabled)
@@ -157,6 +158,11 @@ void LastFmScrobbler::finishedPlaying()
     }
 }
 
+void LastFmScrobbler::setProxy(const std::string& server, uint32_t port, const std::string& username, const std::string& password)
+{
+	m_pLastFmClient->setProxy(server, port, username, password);
+}
+
 bool LastFmScrobbler::trackCanBeCommited(const SubmissionInfo& info)
 {
     time_t curTime = time(NULL);
@@ -191,7 +197,7 @@ void LastFmScrobbler::authenticateIfNecessary()
     {
         if (m_Synchronous)
         {
-            authenticate();
+            authenticateNow();
         }
         else
         {
@@ -200,7 +206,7 @@ void LastFmScrobbler::authenticateIfNecessary()
     }
 }
 
-void LastFmScrobbler::authenticate()
+void LastFmScrobbler::authenticateNow()
 {
     try
     {
@@ -234,7 +240,7 @@ void* LastFmScrobbler::authenticateThread(void* pInstance)
     LastFmScrobbler* pScrobbler = reinterpret_cast<LastFmScrobbler*>(pInstance);
     log::info("Authenticate thread started");
 
-    pScrobbler->authenticate();
+    pScrobbler->authenticateNow();
 
     {
         ScopedLock lock(pScrobbler->m_AuthenticatedMutex);
@@ -315,7 +321,7 @@ void LastFmScrobbler::setNowPlaying()
     catch (BadSessionError& e)
     {
         log::info("Session has become invalid: starting new handshake");
-        authenticate();
+        authenticateNow();
         setNowPlaying();
     }
     catch (ConnectionError& e)
@@ -365,7 +371,7 @@ void LastFmScrobbler::submitTrack(const SubmissionInfo& info)
     catch (BadSessionError& e)
     {
         log::info("Session has become invalid: starting new handshake");
-        authenticate();
+        authenticateNow();
         submitTrack(info);
     }
     catch (ConnectionError& e)

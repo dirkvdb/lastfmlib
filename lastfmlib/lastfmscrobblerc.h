@@ -25,6 +25,7 @@
 
 #include <time.h>
 #include <wchar.h>
+#include <inttypes.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -50,8 +51,8 @@ typedef struct submission_info_struct
     wchar_t*            track_wide;           /**< \brief the track title in widechar*/
     wchar_t*            album_wide;           /**< \brief the album in widechar*/
 
-    int                 track_length_in_secs; /**< \brief the track length (in seconds) */
-    int                 track_nr;             /**< \brief the track number */
+    int32_t             track_length_in_secs; /**< \brief the track length (in seconds) */
+    int32_t             track_nr;             /**< \brief the track number */
     char*               music_brainz_id;      /**< \brief the Music Brainz Id */
     time_t              time_started;         /**< \brief time the track started (-1 for current time, default -1) */
 
@@ -69,7 +70,7 @@ typedef struct submission_info_struct
  * case of network problems)
  * \return lastfm_scrobbler structure
  */
-lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int hashed_password, int synchronous);
+lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int32_t hashed_password, int32_t synchronous);
 
 /** Create Last.fm scrobbler struct using your own client identifier (see http://www.last.fm/api/submissions#1.1)
  * \param clientIdentifier the Last.fm client identifier
@@ -89,6 +90,18 @@ lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, con
  */
 void destroy_scrobbler(lastfm_scrobbler* scrobbler);
 
+/** Authenticate with the Last.fm servers
+ */
+void authenticate_scrobbler(lastfm_scrobbler* scrobbler);
+
+/** Set the proxy server to use for the connection to the Last.fm servers
+ * \param server the address of the proxy server
+ * \param port the port of the proxy server
+ * \param username the username if the server needs authentication, pass NULL otherwise
+ * \param password the password if the server needs authentication, pass NULL otherwise
+ */
+void set_proxy_server(lastfm_scrobbler* scrobbler, const char* server, uint32_t port, const char* username, const char* password);
+
 /** Create and initialize a submission_info struct
  * \return intialized submission info struct
  */
@@ -104,7 +117,7 @@ void destroy_submission_info(submission_info* info);
  * \param scrobbler initialized scrobbler struct
  * \param commit_only set commitOnlyMode to 1 or 0
  */
-void set_commit_only_mode(lastfm_scrobbler* scrobbler, int commit_only);
+void set_commit_only_mode(lastfm_scrobbler* scrobbler, int32_t commit_only);
 
 /** Indicate that a new track has started playing, the previous track
  * will be submitted (if available) and the new track will be set as
@@ -124,7 +137,7 @@ void finished_playing(lastfm_scrobbler* scrobbler);
  * \param scrobbler initialized scrobbler struct
  * \param paused 1 if track is being paused, 0 if being unpaused
  */
-void pause_playing(lastfm_scrobbler* scrobbler, int paused);
+void pause_playing(lastfm_scrobbler* scrobbler, int32_t paused);
 
 /** Generates a hashed password
  * The password has to be freed after the call to create_scrobbler

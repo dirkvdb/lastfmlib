@@ -14,41 +14,8 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef UTILS_THREAD_H
-#define UTILS_THREAD_H
+#include "numericoperations.h"
 
-#include <pthread.h>
 
-namespace utils
-{
-typedef void* (*ThreadFunction)(void* pInstance);
 
-class Thread
-{
-public:
-    Thread(ThreadFunction pfnThreadFunction, void* pInstance);
-    ~Thread();
 
-    void start();
-    void join();
-    void cancel();
-    bool isRunning();
-
-private:
-    struct InstancePointers
-    {
-        Thread* pThreadInstance;
-        void*   pRunInstance;
-    };
-
-    static void* onThreadStart(void* data);
-    static void onThreadExit(void* data);
-
-    pthread_t           m_Thread;
-    pthread_key_t       m_Key;
-    ThreadFunction      m_pfnThreadFunction;
-    InstancePointers    m_InstancePtrs;
-};
-}
-
-#endif

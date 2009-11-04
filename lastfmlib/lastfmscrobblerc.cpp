@@ -21,14 +21,14 @@
 #include <stdexcept>
 #include <cstring>
 
-extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int hashed_password, int synchronous)
+extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int32_t hashed_password, int32_t synchronous)
 {
     lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
     scrobbler->scrobbler    = new LastFmScrobbler(username, password, hashed_password, synchronous);
     return scrobbler;
 }
 
-extern "C" lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, const char* client_version, const char* username, const char* password, int hashed_password, int synchronous)
+extern "C" lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, const char* client_version, const char* username, const char* password, int32_t hashed_password, int32_t synchronous)
 {
     lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
     scrobbler->scrobbler    = new LastFmScrobbler(client_identifier, client_version, username, password, hashed_password, synchronous);
@@ -39,6 +39,16 @@ extern "C" void destroy_scrobbler(lastfm_scrobbler* scrobbler)
 {
     delete reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler);
     delete scrobbler;
+}
+
+extern "C" void authenticate_scrobbler(lastfm_scrobbler* scrobbler)
+{
+	reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->authenticate();
+}
+
+extern "C" void set_proxy_server(lastfm_scrobbler* scrobbler, const char* server, uint32_t port, const char* username, const char* password)
+{
+	reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->setProxy(server, port, username ? username : "", password ? password : "");
 }
 
 extern "C" submission_info* create_submission_info()
@@ -70,7 +80,7 @@ extern "C" void destroy_submission_info(submission_info* info)
     delete info;
 }
 
-extern "C" void set_commit_only_mode(lastfm_scrobbler* scrobbler, int commit_only)
+extern "C" void set_commit_only_mode(lastfm_scrobbler* scrobbler, int32_t commit_only)
 {
     reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->setCommitOnlyMode(commit_only != 0);
 }
@@ -114,7 +124,7 @@ extern "C" void finished_playing(lastfm_scrobbler* scrobbler)
     reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->finishedPlaying();
 }
 
-extern "C" void pause_playing(lastfm_scrobbler* scrobbler, int paused)
+extern "C" void pause_playing(lastfm_scrobbler* scrobbler, int32_t paused)
 {
     reinterpret_cast<LastFmScrobbler*>(scrobbler->scrobbler)->pausePlaying(paused != 0);
 }
