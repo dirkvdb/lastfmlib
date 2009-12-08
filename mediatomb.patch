@@ -1,6 +1,6 @@
 Index: src/config_manager.cc
 ===================================================================
---- src/config_manager.cc	(revision 2018)
+--- src/config_manager.cc	(revision 2022)
 +++ src/config_manager.cc	(working copy)
 @@ -628,6 +628,14 @@
  #ifdef EXTERNAL_TRANSCODING
@@ -62,7 +62,7 @@ Index: src/config_manager.cc
                       _(DEFAULT_ATRAILERS_ENABLED));
 Index: src/server.cc
 ===================================================================
---- src/server.cc	(revision 2018)
+--- src/server.cc	(revision 2022)
 +++ src/server.cc	(working copy)
 @@ -37,6 +37,10 @@
      #include <curl/curl.h>
@@ -153,7 +153,7 @@ Index: src/lastfm.h
 +#endif//HAVE_LASTFMLIB
 Index: src/common.h
 ===================================================================
---- src/common.h	(revision 2018)
+--- src/common.h	(revision 2022)
 +++ src/common.h	(working copy)
 @@ -352,6 +352,12 @@
      #define DEFAULT_FFMPEGTHUMBNAILER_WORKAROUND_BUGS   NO
@@ -170,7 +170,7 @@ Index: src/common.h
  #define DEFAULT_MARK_PLAYED_ITEMS_STRING_MODE           "prepend"
 Index: src/config_manager.h
 ===================================================================
---- src/config_manager.h	(revision 2018)
+--- src/config_manager.h	(revision 2022)
 +++ src/config_manager.h	(working copy)
 @@ -187,6 +187,12 @@
      CFG_ONLINE_CONTENT_ATRAILERS_PURGE_AFTER,
@@ -187,7 +187,7 @@ Index: src/config_manager.h
  
 Index: src/file_request_handler.cc
 ===================================================================
---- src/file_request_handler.cc	(revision 2018)
+--- src/file_request_handler.cc	(revision 2022)
 +++ src/file_request_handler.cc	(working copy)
 @@ -66,6 +66,10 @@
      #include "transcoding/transcode_dispatcher.h"
@@ -221,7 +221,7 @@ Index: src/lastfm.cc
 ===================================================================
 --- src/lastfm.cc	(revision 0)
 +++ src/lastfm.cc	(revision 0)
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,137 @@
 +/*MT*
 +
 +    MediaTomb - http://www.mediatomb.cc/
@@ -292,6 +292,7 @@ Index: src/lastfm.cc
 +    String password = config->getOption(CFG_LASTFM_PASSWORD);
 +
 +    scrobbler = create_scrobbler(username.c_str(), password.c_str(), 0, 0);
++    authenticate_scrobbler(scrobbler);
 +    set_commit_only_mode(scrobbler, 1);
 +}
 +
@@ -360,7 +361,7 @@ Index: src/lastfm.cc
 +#endif//HAVE_LASTFMLIB
 Index: build/libmediatomb_src
 ===================================================================
---- build/libmediatomb_src	(revision 2018)
+--- build/libmediatomb_src	(revision 2022)
 +++ build/libmediatomb_src	(working copy)
 @@ -67,6 +67,8 @@
  ../src/layout/js_layout.cc \
@@ -373,7 +374,7 @@ Index: build/libmediatomb_src
  ../src/main.cc \
 Index: build/Makefile.am
 ===================================================================
---- build/Makefile.am	(revision 2018)
+--- build/Makefile.am	(revision 2022)
 +++ build/Makefile.am	(working copy)
 @@ -27,7 +27,8 @@
                       $(CURL_CFLAGS) \
@@ -407,17 +408,17 @@ Index: build/Makefile.am
 +
 Index: configure.ac
 ===================================================================
---- configure.ac	(revision 2018)
+--- configure.ac	(revision 2022)
 +++ configure.ac	(working copy)
 @@ -1569,6 +1569,12 @@
  LDFLAGS="$LDFLAGS_SAVE"
  CPPFLAGS="$CPPFLAGS_SAVE"
  
 +######## lastfm
-+MT_CHECK_OPTIONAL_PACKAGE([lastfmlib], [disable],
++MT_CHECK_OPTIONAL_PACKAGE([liblastfmlib], [disable],
 +        [compile with lastfmlib support for Last.fm scrobbling],
 +        [lastfmlib/lastfmscrobbler],
-+        [lastfm], [create_scrobbler])
++        [lastfmlib], [create_scrobbler])
 +
  ######## extractor
  
@@ -426,7 +427,7 @@ Index: configure.ac
  echo "libdvdnav             : $LIBDVDNAV_STATUS"
  echo "ffmpeg                : $FFMPEG_STATUS"
  echo "ffmpegthumbnailer     : $FFMPEGTHUMBNAILER_STATUS"
-+echo "lastfm                : $LASTFMLIB_STATUS"
++echo "lastfm                : $LIBLASTFMLIB_STATUS"
  echo "external transcoding  : $EXTERNAL_TRANSCODING_OPTION_ENABLED"
  echo "curl                  : $CURL_OK"
  echo "YouTube               : $YOUTUBE_OPTION_ENABLED"
