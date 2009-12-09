@@ -382,7 +382,7 @@ Index: build/Makefile.am
                       $(LIBMP4V2_CFLAGS) \
 -                     $(LIBDVDNAV_CFLAGS)
 +                     $(LIBDVDREAD_CFLAGS) \
-+                     $(LASTFMLIB_CFLAGS)
++                     $(LIBLASTFMLIB_CFLAGS)
  
  bin_PROGRAMS = mediatomb
  mediatomb_SOURCES = $(top_srcdir)/src/main.cc
@@ -393,7 +393,7 @@ Index: build/Makefile.am
 -                     $(LIBDVDNAV_CFLAGS)
 +                     $(LIBDVDREAD_CFLAGS) \
 +                     $(LIBDVDNAV_CFLAGS) \
-+					 $(LASTFMLIB_CFLAGS)
++					 $(LIBLASTFMLIB_CFLAGS)
  
  mediatomb_LDADD = \
      libmediatomb.a \
@@ -404,7 +404,7 @@ Index: build/Makefile.am
 -    $(CURL_LIBS)
 -    
 +    $(CURL_LIBS)\
-+    $(LASTFMLIB_LIBS)
++    $(LIBLASTFMLIB_LIBS)
 +
 Index: configure.ac
 ===================================================================
