@@ -7,7 +7,7 @@ Index: src/config_manager.cc
      config->appendElementChild(renderTranscodingSection());
  #endif
 +
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    Ref<Element> lastfm(new Element(_("lastfm")));
 +    lastfm->setAttribute(_("enabled"), _(DEFAULT_LASTFM_ENABLED));
 +    lastfm->appendTextChild(_("username"), _(DEFAULT_LASTFM_USERNAME));
@@ -21,7 +21,7 @@ Index: src/config_manager.cc
      SET_BOOL_OPTION(CFG_ONLINE_CONTENT_WEBORAMA_UPDATE_AT_START);
  #endif
  
-+#if defined(HAVE_LASTFMLIB)
++#if defined(HAVE_LIBLASTFMLIB)
 +    temp = getOption(_("/lastfm/attribute::enabled"), _(DEFAULT_LASTFM_ENABLED));
 +
 +    if (!validateYesNo(temp))
@@ -68,7 +68,7 @@ Index: src/server.cc
      #include <curl/curl.h>
  #endif
  
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    #include "lastfm.h"
 +#endif
 +
@@ -80,7 +80,7 @@ Index: src/server.cc
      curl_global_init(CURL_GLOBAL_ALL);
  #endif
 +
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    LastFm::getInstance()->initialize();
 +#endif
  }
@@ -90,7 +90,7 @@ Index: src/server.cc
      curl_global_cleanup();
  #endif
  
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    LastFm::getInstance()->destroy();
 +#endif
 +
@@ -105,7 +105,7 @@ Index: src/lastfm.h
 +/// \file lastfm_scrobbler.h
 +/// \brief Last.fm scrobbler.
 +
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +
 +#ifndef __LASTFM_H__
 +#define __LASTFM_H__
@@ -150,7 +150,7 @@ Index: src/lastfm.h
 +
 +#endif//__LASTFM_H__
 +
-+#endif//HAVE_LASTFMLIB
++#endif//HAVE_LIBLASTFMLIB
 Index: src/common.h
 ===================================================================
 --- src/common.h	(revision 2022)
@@ -159,7 +159,7 @@ Index: src/common.h
      #define DEFAULT_FFMPEGTHUMBNAILER_WORKAROUND_BUGS   NO
  #endif
  
-+#if defined(HAVE_LASTFMLIB)
++#if defined(HAVE_LIBLASTFMLIB)
 +    #define DEFAULT_LASTFM_ENABLED  NO
 +    #define DEFAULT_LASTFM_USERNAME "lastfmuser"
 +    #define DEFAULT_LASTFM_PASSWORD "lastfmpass"
@@ -176,7 +176,7 @@ Index: src/config_manager.h
      CFG_ONLINE_CONTENT_ATRAILERS_PURGE_AFTER,
      CFG_ONLINE_CONTENT_ATRAILERS_RESOLUTION,
  #endif
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    CFG_LASTFM_ENABLED,
 +    CFG_LASTFM_USERNAME,
 +    CFG_LASTFM_PASSWORD,
@@ -193,7 +193,7 @@ Index: src/file_request_handler.cc
      #include "transcoding/transcode_dispatcher.h"
  #endif
  
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    #include "lastfm.h"
 +#endif
 +
@@ -208,7 +208,7 @@ Index: src/file_request_handler.cc
 +    
      String path = item->getLocation();
 +    
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +    if (item->getMimeType().startsWith(String("audio")))
 +    {
 +        LastFm::getInstance()->startedPlaying(item);
@@ -257,7 +257,7 @@ Index: src/lastfm.cc
 +    #include "autoconfig.h"
 +#endif
 +
-+#ifdef HAVE_LASTFMLIB
++#ifdef HAVE_LIBLASTFMLIB
 +
 +#include "lastfm.h"
 +#include "config_manager.h"
@@ -358,7 +358,7 @@ Index: src/lastfm.cc
 +    destroy_submission_info(info);
 +}
 +
-+#endif//HAVE_LASTFMLIB
++#endif//HAVE_LIBLASTFMLIB
 Index: build/libmediatomb_src
 ===================================================================
 --- build/libmediatomb_src	(revision 2022)
