@@ -73,7 +73,7 @@ void LastFmClient::handshake(const string& user, const string& pass)
     }
     else if (lines.size() < 4)
     {
-        log::debug("Response:", response, "( lines", lines.size(), ")");
+        Log::debug("Response:", response, "( lines", lines.size(), ")");
         throw logic_error("Failed to connect to last.fm: invalid response length");
     }
 

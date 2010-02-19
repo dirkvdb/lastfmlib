@@ -17,44 +17,63 @@
 #include "condition.h"
 
 #include "mutex.h"
-#include <sys/time.h>
-#include <errno.h>
-#include <string.h>
+
+#include <cerrno>
+#include <cstring>
 #include <stdexcept>
 
-using namespace std;
+#ifndef WIN32
+#include <sys/time.h>
+#endif
 
-typedef unsigned long long uint64;
+using namespace std;
 
 namespace utils
 {
 
 Condition::Condition()
+: m_Condition()
 {
-    pthread_cond_init(&m_Condition, NULL);
+#ifndef WIN32
+    if (pthread_cond_init(&m_Condition, NULL) != 0)
+    {
+        throw std::logic_error("Failed to create condition");
+    }
+#else
+    m_Condition = CreateEvent(NULL, FALSE, FALSE, NULL);
+#endif
 }
 
 Condition::~Condition()
 {
+#ifndef WIN32
     pthread_cond_destroy(&m_Condition);
+#endif
 }
 
 void Condition::wait(Mutex& mutex)
 {
+#ifndef WIN32
     int ret = pthread_cond_wait(&m_Condition, mutex.getHandle());
     if (0 != ret)
     {
         throw std::logic_error(string("pthread_cond_wait returned: ") + strerror(ret));
     }
+#else
+    LeaveCriticalSection(mutex.getHandle());
+    WaitForSingleObject(m_Condition, INFINITE);
+    EnterCriticalSection(mutex.getHandle());
+#endif
 }
 
-bool Condition::wait(Mutex& mutex, int timeoutInMs)
+bool Condition::wait(Mutex& mutex, int32_t timeoutInMs)
 {
+#ifndef WIN32
     struct timeval currentTime;
     gettimeofday(&currentTime, NULL);
 
     struct timespec timeoutTime;
-    uint64 nanoSeconds = (static_cast<uint64>(timeoutInMs) * 1000000) + (static_cast<uint64>(currentTime.tv_usec) * 1000);
+    uint64_t nanoSeconds = (static_cast<uint64_t>(timeoutInMs) * 1000000) + (static_cast<uint64_t>(currentTime.tv_usec) * 1000);
     int seconds = nanoSeconds / 1000000000;
 
     timeoutTime.tv_sec += currentTime.tv_sec + seconds;
@@ -69,18 +88,40 @@ bool Condition::wait(Mutex& mutex, int timeoutInMs)
     {
         throw std::logic_error(string("pthread_cond_timedwait returned: ") + strerror(ret));
     }
+#else
+    LeaveCriticalSection(mutex.getHandle());
+    DWORD ret = WaitForSingleObject(m_Condition, timeoutInMs);
+    if (ret == WAIT_TIMEOUT)
+    {
+        return false;
+    }
+    else if (ret == WAIT_FAILED)
+    {
+        throw std::logic_error("Failed to wait for mutex");
+    }
+
+    EnterCriticalSection(mutex.getHandle());
+#endif
 
     return true;
 }
 
 void Condition::signal()
 {
+#ifndef WIN32
     pthread_cond_signal(&m_Condition);
+#else
+    SetEvent(m_Condition);
+#endif
 }
 
 void Condition::broadcast()
 {
+#ifndef WIN32
     pthread_cond_broadcast(&m_Condition);
+#else
+    SetEvent(m_Condition);
+#endif
 }
 
 }

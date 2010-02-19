@@ -14,10 +14,14 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef UTILS_THREAD_H
-#define UTILS_THREAD_H
+#ifndef THREAD_H
+#define THREAD_H
 
+#ifndef WIN32
 #include <pthread.h>
+#else
+#include <Windows.h>
+#endif
 
 namespace utils
 {
@@ -41,11 +45,21 @@ private:
         void*   pRunInstance;
     };
 
+#ifndef WIN32
     static void* onThreadStart(void* data);
     static void onThreadExit(void* data);
+#else
+    static DWORD WINAPI winThreadFunc(LPVOID pData);
+#endif
 
+#ifndef WIN32
     pthread_t           m_Thread;
     pthread_key_t       m_Key;
+#else
+    HANDLE              m_Thread;
+    DWORD               m_ThreadId;
+#endif
+    
     ThreadFunction      m_pfnThreadFunction;
     InstancePointers    m_InstancePtrs;
 };

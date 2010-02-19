@@ -18,7 +18,7 @@
 #define URL_CLIENT_H
 
 #include <string>
-#include <inttypes.h>
+#include "utils/types.h"
 
 class UrlClient
 {

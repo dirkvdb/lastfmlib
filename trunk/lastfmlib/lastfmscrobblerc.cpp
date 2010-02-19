@@ -24,14 +24,14 @@
 extern "C" lastfm_scrobbler* create_scrobbler(const char* username, const char* password, int32_t hashed_password, int32_t synchronous)
 {
     lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
-    scrobbler->scrobbler    = new LastFmScrobbler(username, password, hashed_password, synchronous);
+    scrobbler->scrobbler    = new LastFmScrobbler(username, password, hashed_password == 0 ? false : true, synchronous == 0 ? false : true);
     return scrobbler;
 }
 
 extern "C" lastfm_scrobbler* create_identified_scrobbler(const char* client_identifier, const char* client_version, const char* username, const char* password, int32_t hashed_password, int32_t synchronous)
 {
     lastfm_scrobbler* scrobbler = new lastfm_scrobbler();
-    scrobbler->scrobbler    = new LastFmScrobbler(client_identifier, client_version, username, password, hashed_password, synchronous);
+    scrobbler->scrobbler    = new LastFmScrobbler(client_identifier, client_version, username, password, hashed_password == 0 ? false : true, synchronous == 0 ? false : true);
     return scrobbler;
 }
 
@@ -69,7 +69,7 @@ extern "C" submission_info* create_submission_info()
     info->time_started             = -1;
 
     info->track_source             = UserChosen;
-    info->track_rating             = None;
+    info->track_rating             = NoRating;
     info->recommendation_key       = NULL;
 
     return info;

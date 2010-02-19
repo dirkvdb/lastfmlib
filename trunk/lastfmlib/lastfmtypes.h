@@ -32,17 +32,17 @@ enum TrackSource
     NonPersonalizedBroadCast,   /**< Non-personalised broadcast (e.g. Shoutcast, BBC Radio 1) */
     PersonalizedRecommendation, /**< Personalised recommendation except Last.fm (e.g. Pandora, Launchcast) */
     Lastfm,                     /**< Last.fm */
-    Unknown                     /**< Unknown source */
+    UnknownSource               /**< Unknown source */
 };
 
 /** The TrackRating enum contains possible ratings for a track.
  */
 enum TrackRating
 {
-    Love,   /**< On any mode if the user has manually loved the track. This implies a listen */
-    Ban,    /**< Only if source = Lastfm. This implies a skip, and the client should skip to the next track when a ban happens */
-    Skip,   /**< Only if source = Lastfm */
-    None    /**< If no rating is applicable */
+    Love,    /**< On any mode if the user has manually loved the track. This implies a listen */
+    Ban,     /**< Only if source = Lastfm. This implies a skip, and the client should skip to the next track when a ban happens */
+    Skip,    /**< Only if source = Lastfm */
+    NoRating /**< If no rating is applicable */
 };
 
 #endif

@@ -25,13 +25,13 @@
 
 #include <time.h>
 #include <wchar.h>
-#include <inttypes.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#include "utils/types.h"
 #include "lastfmtypes.h"
 
 struct AVFormatContext;

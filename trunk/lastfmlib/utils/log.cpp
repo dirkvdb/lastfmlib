@@ -20,6 +20,10 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include "winconfig.h"
+#endif
+
 #ifdef ENABLE_LOGGING
     #include <syslog.h>
 #endif
@@ -28,8 +32,23 @@
 #include <iostream>
 #include <sstream>
 
-namespace log
+namespace Log
 {
+
+
+#ifndef WIN32
+static const std::string red         = "\033[31m";
+static const std::string green       = "\033[32m";
+static const std::string yellow      = "\033[33m";
+static const std::string purple      = "\033[35m";
+static const std::string standard    = "\033[39m";
+#else
+static const std::string red;
+static const std::string green;
+static const std::string yellow;
+static const std::string purple;
+static const std::string standard;
+#endif
 
 static void outputInfo(const std::string& message)
 {
@@ -38,7 +57,7 @@ static void outputInfo(const std::string& message)
 #endif
 
 #ifdef ENABLE_DEBUG
-    std::cout << "INFO:  " << message << std::endl;
+    std::cout << green << "INFO:  " << message << standard << std::endl;
 #endif
 }
 
@@ -103,7 +122,7 @@ static void outputWarn(const std::string& message)
     syslog(LOG_WARNING, "%s", message.c_str());
 #endif
 
-    std::cout << "WARN:  " << message << std::endl;
+    std::cout << yellow << "WARN:  " << message << standard << std::endl;
 }
 
 template<typename T1>
@@ -167,7 +186,7 @@ static void outputCritical(const std::string& message)
     syslog(LOG_CRIT, "%s", message.c_str());
 #endif
 
-    std::cerr << "CRIT:  " << message << std::endl;
+    std::cerr << purple << "CRIT:  " << message << standard << std::endl;
 }
 
 template<typename T1>
@@ -231,7 +250,7 @@ static void outputError(const std::string& message)
     syslog(LOG_ERR, "%s", message.c_str());
 #endif
 
-    std::cerr << "ERROR: " << message << std::endl;
+    std::cerr << red << "ERROR: " << message << standard << std::endl;
 }
 
 template<typename T1>
@@ -350,6 +369,15 @@ void debug(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5,
 {
     std::stringstream ss;
     ss << t1 << " " << t2 << " " << t3 << " " << t4 << " " << t5 << " " << t6;
+
+    outputDebug(ss.str());
+}
+
+template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+void debug(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5, const T6& t6, const T7& t7)
+{
+    std::stringstream ss;
+    ss << t1 << " " << t2 << " " << t3 << " " << t4 << " " << t5 << " " << t6 << " " << t7;
 
     outputDebug(ss.str());
 }
