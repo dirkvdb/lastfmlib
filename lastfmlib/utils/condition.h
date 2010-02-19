@@ -14,10 +14,16 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef UTILS_CONDITION_H
-#define UTILS_CONDITION_H
+#ifndef CONDITION_H
+#define CONDITION_H
 
+#ifndef WIN32
 #include <pthread.h>
+#else
+#include <Windows.h>
+#endif
+
+#include "types.h"
 
 namespace utils
 {
@@ -31,12 +37,16 @@ public:
     ~Condition();
 
     void wait(Mutex& mutex);
-    bool wait(Mutex& mutex, int timeoutInMs);
+    bool wait(Mutex& mutex, int32_t timeoutInMs);
     void signal();
     void broadcast();
 
 private:
-    pthread_cond_t m_Condition;
+#ifndef WIN32
+    pthread_cond_t  m_Condition;
+#else
+    HANDLE m_Condition;
+#endif
 };
 
 }

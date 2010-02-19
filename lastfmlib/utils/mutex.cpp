@@ -16,30 +16,52 @@
 
 #include "mutex.h"
 
+#include <stdexcept>
+
 namespace utils
 {
 
 Mutex::Mutex()
+: m_Mutex()
 {
-    pthread_mutex_init(&m_Mutex, NULL);
+#ifndef WIN32
+    pthread_mutexattr_t mutexAttr;
+    pthread_mutexattr_init(&mutexAttr);
+    pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&m_Mutex, &mutexAttr);
+#else
+    InitializeCriticalSection(&m_Mutex);
+#endif
 }
 
 Mutex::~Mutex()
 {
+#ifndef WIN32
     pthread_mutex_destroy(&m_Mutex);
+#else
+    DeleteCriticalSection(&m_Mutex);
+#endif
 }
 
 void Mutex::lock()
 {
+#ifndef WIN32
     pthread_mutex_lock(&m_Mutex);
+#else
+    EnterCriticalSection(&m_Mutex);
+#endif
 }
 
 void Mutex::unlock()
 {
+#ifndef WIN32
     pthread_mutex_unlock(&m_Mutex);
+#else
+    LeaveCriticalSection(&m_Mutex);
+#endif
 }
 
-pthread_mutex_t* Mutex::getHandle()
+MutexHandle* Mutex::getHandle()
 {
     return &m_Mutex;
 }

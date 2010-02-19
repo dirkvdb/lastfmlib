@@ -14,13 +14,23 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef UTILS_MUTEX_H
-#define UTILS_MUTEX_H
+#ifndef MUTEX_H
+#define MUTEX_H
 
+#ifndef WIN32
 #include <pthread.h>
+#else
+#include <Windows.h>
+#endif
 
 namespace utils
 {
+
+#ifndef WIN32
+    typedef pthread_mutex_t MutexHandle;
+#else
+    typedef CRITICAL_SECTION MutexHandle;
+#endif
 
 class Mutex
 {
@@ -31,10 +41,10 @@ public:
     void lock();
     void unlock();
 
-    pthread_mutex_t* getHandle();
+    MutexHandle* getHandle();
 
 private:
-    pthread_mutex_t m_Mutex;
+    MutexHandle m_Mutex;
 };
 
 }

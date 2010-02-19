@@ -16,11 +16,11 @@
 
 #include "thread.h"
 
-#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <string.h>
+#include <cstring>
 
+#include "types.h"
 
 namespace utils
 {
@@ -30,14 +30,21 @@ using namespace std;
 
 Thread::Thread(ThreadFunction pfnThreadFunction, void* pInstance)
 : m_Thread(0)
+#ifndef WIN32
 , m_Key(0)
+#else
+, m_ThreadId(0)
+#endif
 , m_pfnThreadFunction(pfnThreadFunction)
+, m_InstancePtrs()
 {
-    int ret = pthread_key_create(&m_Key, Thread::onThreadExit);
+#ifndef WIN32
+    int32_t ret = pthread_key_create(&m_Key, Thread::onThreadExit);
     if (0 != ret)
     {
         throw logic_error(string("Failed to create thread key: ") + strerror(ret));
     }
+#endif
 
     m_InstancePtrs.pThreadInstance = this;
     m_InstancePtrs.pRunInstance = pInstance;
@@ -45,23 +52,33 @@ Thread::Thread(ThreadFunction pfnThreadFunction, void* pInstance)
 
 Thread::~Thread()
 {
+#ifndef WIN32
     pthread_key_delete(m_Key);
+#endif
 }
 
 void Thread::start()
 {
-    int ret = pthread_create(&m_Thread, NULL, Thread::onThreadStart, &m_InstancePtrs);
+#ifndef WIN32
+    int32_t ret = pthread_create(&m_Thread, NULL, Thread::onThreadStart, &m_InstancePtrs);
     if (0 != ret)
     {
         throw logic_error(string("Failed to create thread: ") + strerror(ret));
     }
+#else
+    m_Thread = CreateThread(NULL, 0, Thread::winThreadFunc, &m_InstancePtrs, 0, &m_ThreadId);
+#endif
 }
 
 void Thread::join()
 {
     if (m_Thread != 0)
     {
+#ifndef WIN32
         pthread_join(m_Thread, NULL);
+#else
+        WaitForSingleObject(m_Thread, INFINITE);
+#endif
     }
 }
 
@@ -69,7 +86,11 @@ void Thread::cancel()
 {
     if (m_Thread != 0)
     {
+#ifndef WIN32
         pthread_cancel(m_Thread);
+#else
+        TerminateThread(m_Thread, 1);
+#endif
     }
 }
 
@@ -78,11 +99,12 @@ bool Thread::isRunning()
     return m_Thread != 0;
 }
 
+#ifndef WIN32
 void* Thread::onThreadStart(void* data)
 {
     InstancePointers* pPtrs = reinterpret_cast<InstancePointers*>(data);
 
-    int ret = pthread_setspecific(pPtrs->pThreadInstance->m_Key, pPtrs->pThreadInstance);
+    int32_t ret = pthread_setspecific(pPtrs->pThreadInstance->m_Key, pPtrs->pThreadInstance);
     if (0 != ret)
     {
         throw logic_error(string("Failed to set thread data: ") + strerror(ret));
@@ -96,5 +118,14 @@ void Thread::onThreadExit(void* data)
     //pthread_detach(pThread->m_Thread);
     pThread->m_Thread = 0;
 }
+#else
+DWORD WINAPI Thread::winThreadFunc(LPVOID pData)
+{
+    InstancePointers* pPtrs = reinterpret_cast<InstancePointers*>(pData);
+    pPtrs->pThreadInstance->m_pfnThreadFunction(pPtrs->pRunInstance);
+
+    return 0;
+}
+#endif
 
 }

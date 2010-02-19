@@ -122,7 +122,6 @@ private:
     void submitTrack(const SubmissionInfo& info);
     void setNowPlaying();
 
-    void startThread(pthread_t* pThread, utils::ThreadFunction pfnThreadFunction);
     void joinThreads();
 
     static void* authenticateThread(void* pInstance);

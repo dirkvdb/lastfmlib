@@ -39,7 +39,7 @@ std::string sourceToString(TrackSource source, const std::string& recommendation
         case Lastfm:
             return "L" + recommendationKey;
             break;
-        case Unknown:
+        case UnknownSource:
         default:
             return "U";
     }
@@ -58,7 +58,7 @@ std::string ratingToString(TrackRating rating)
         case Skip:
             return "S";
             break;
-        case None:
+        case NoRating:
         default:
             return "";
     }
@@ -68,7 +68,7 @@ SubmissionInfo::SubmissionInfo()
 : NowPlayingInfo()
 , m_TimeStarted(0)
 , m_Source(UserChosen)
-, m_Rating(None)
+, m_Rating(NoRating)
 {
 }
 
@@ -76,7 +76,7 @@ SubmissionInfo::SubmissionInfo(const string& artist, const string& track, time_t
 : NowPlayingInfo(artist, track)
 , m_TimeStarted(timeStarted)
 , m_Source(UserChosen)
-, m_Rating(None)
+, m_Rating(NoRating)
 {
 }
 
@@ -84,7 +84,7 @@ SubmissionInfo::SubmissionInfo(const wstring& artist, const wstring& track, time
 : NowPlayingInfo(artist, track)
 , m_TimeStarted(timeStarted)
 , m_Source(UserChosen)
-, m_Rating(None)
+, m_Rating(NoRating)
 {
 }
 
