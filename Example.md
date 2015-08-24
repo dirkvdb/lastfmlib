@@ -1,0 +1,14 @@
+# C++ example #
+
+The following code snippet shows how easy it is to use lastfmlib in your application.
+
+```
+LastFmScrobbler scrobbler("Username", "password", false);
+
+SubmissionInfo info("Artist", "Title");
+info.setAlbum("Album");
+info.setTrackNr(1);
+info.setTrackLength(180);
+
+scrobbler->startedPlaying(info);
+```
